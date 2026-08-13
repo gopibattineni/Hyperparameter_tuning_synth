@@ -1,0 +1,3 @@
+dataset,generator,status,best_value,elapsed_sec,n_trials,objective,fidelity,utility,privacy_risk,ks_similarity,corr_similarity,mia_auc,nndr,dcr,mean_f1_gap,mean_tstr_f1,mean_trtr_f1,run_dir,error
+cancer,bootstrap_noise,completed,0.27989366674792593,1.2535029975697398,1,0.27989366674792593,0.9577640174956161,0.06035187336000358,0.6367634479716098,0.9559730591988657,0.9595549757923665,0.28231000429368824,0.014638513917447755,0.029717602822313473,0.9396481266399964,0.0,0.9396481266399964,synth_hpo/results/_smoke/cancer/bootstrap_noise,
+cancer,bootstrap_noise,skipped_resume,,0.0,,0.27989366674792593,0.9577640174956161,0.06035187336000358,0.6367634479716098,synth_hpo/results/_smoke/cancer/bootstrap_noise,,0.9396481266399964

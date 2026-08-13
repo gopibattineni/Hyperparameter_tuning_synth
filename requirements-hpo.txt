@@ -1,0 +1,8 @@
+# Extra / pinned deps for the synth_hpo Optuna framework.
+# Install on top of the repo root requirements.txt:
+#   pip install -r "hyper parameter tuning/synth_hpo/requirements-hpo.txt"
+
+optuna>=3.0
+pyyaml>=6.0
+plotly>=5.0          # Optuna visualization helpers
+kaleido>=0.2         # static export of Optuna plots (optional)

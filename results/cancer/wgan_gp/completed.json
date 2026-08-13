@@ -1,0 +1,7 @@
+{
+  "dataset": "cancer",
+  "generator": "wgan_gp",
+  "best_value": 0.30640814052358406,
+  "elapsed_sec": 1526.050973421894,
+  "status": "completed"
+}

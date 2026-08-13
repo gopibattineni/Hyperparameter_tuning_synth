@@ -1,0 +1,101 @@
+# CopulaGAN — SDV hybrid (Gaussian Copula transform + CTGAN)
+# Shares CTGAN training knobs; default_distribution adds copula marginals.
+
+generator: copulagan
+backend: sdv.single_table.CopulaGANSynthesizer
+references:
+  - "SDV CopulaGANSynthesizer (CTGAN + GaussianCopula preprocessing)"
+  - "Xu et al. (2019) CTGAN training hyperparameters"
+
+defaults:
+  epochs: 300
+  batch_size: 500
+  generator_lr: 2.0e-4
+  discriminator_lr: 2.0e-4
+  generator_dim: [256, 256]
+  discriminator_dim: [256, 256]
+  discriminator_steps: 1
+  pac: 10
+  default_distribution: beta
+
+search_space:
+  epochs:
+    type: int
+    suggest: int
+    low: 100
+    high: 800
+    step: 50
+    default: 300
+    explanation: >
+      CTGAN-stage epochs after copula transform. Same role as CTGAN epochs;
+      default 300 (SDV).
+
+  batch_size:
+    type: categorical
+    suggest: categorical
+    choices: [100, 200, 500]
+    default: 500
+    explanation: >
+      Mini-batch size for the GAN stage (must be divisible by pac). Default 500.
+
+  generator_lr:
+    type: float
+    suggest: float
+    low: 1.0e-5
+    high: 1.0e-3
+    log: true
+    default: 2.0e-4
+    explanation: >
+      Generator Adam LR (SDV/CTGAN default 2e-4). Critical for convergence of
+      the neural stage on copula-transformed space.
+
+  discriminator_lr:
+    type: float
+    suggest: float
+    low: 1.0e-5
+    high: 1.0e-3
+    log: true
+    default: 2.0e-4
+    explanation: >
+      Discriminator Adam LR (default 2e-4). Imbalance vs generator_lr drives
+      fidelity of recovered joint dependence.
+
+  generator_dim:
+    type: categorical
+    suggest: categorical
+    choices:
+      - [128, 128]
+      - [256, 256]
+      - [256, 256, 256]
+    default: [256, 256]
+    explanation: >
+      Generator capacity on transformed features (default [256,256]).
+
+  discriminator_dim:
+    type: categorical
+    suggest: categorical
+    choices:
+      - [128, 128]
+      - [256, 256]
+      - [256, 256, 256]
+    default: [256, 256]
+    explanation: >
+      Discriminator capacity (default [256,256]).
+
+  pac:
+    type: categorical
+    suggest: categorical
+    choices: [1, 5, 10]
+    default: 10
+    explanation: >
+      PacGAN packing (CTGAN default 10). Reduces mode collapse after the
+      copula transform.
+
+  default_distribution:
+    type: categorical
+    suggest: categorical
+    choices: [beta, truncnorm, gaussian, gamma]
+    default: beta
+    explanation: >
+      Marginal distribution family for the Gaussian-copula preprocessing stage.
+      Affects how continuous columns are standardized before the GAN.

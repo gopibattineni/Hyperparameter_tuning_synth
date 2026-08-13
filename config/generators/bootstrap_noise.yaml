@@ -1,0 +1,17 @@
+# BootstrapNoiseGenerator — smoke-test only (not a research baseline)
+
+generator: bootstrap_noise
+backend: generators.bootstrap
+
+defaults:
+  noise_std: 0.01
+
+search_space:
+  noise_std:
+    type: float
+    suggest: float
+    low: 0.001
+    high: 0.1
+    log: true
+    default: 0.01
+    explanation: Relative Gaussian noise scale applied to numeric columns.

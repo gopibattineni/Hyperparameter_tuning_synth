@@ -1,0 +1,3 @@
+dataset,generator,status,best_value,elapsed_sec,n_trials,objective,fidelity,utility,privacy_risk,ks_similarity,corr_similarity,mia_auc,nndr,dcr,mean_f1_gap,mean_tstr_f1,mean_trtr_f1,run_dir,error
+cancer,ctabgan,failed,,0.6432626415044069,0,,,,,,,,,,,,,/home/gopi.battineni/SYNTH_BENCHMARK/hyper parameter tuning/results/cancer/ctabgan,ValueError: No trials are completed yet.
+cancer,wgan_gp,completed,0.30640814052358406,1526.050973421894,50,0.3056794386976383,0.9486845997247979,0.06035187336000358,0.4896757526814115,0.9378943637008154,0.9594748357487803,0.536711034778875,0.9289325490267535,2.055624965673509,0.9396481266399964,0.0,0.9396481266399964,/home/gopi.battineni/SYNTH_BENCHMARK/hyper parameter tuning/results/cancer/wgan_gp,

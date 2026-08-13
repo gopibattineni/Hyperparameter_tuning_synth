@@ -1,0 +1,156 @@
+# Dataset registry — 15 SYNTH_BENCHMARK datasets.
+# Paths relative to repo root; UCI entries need `ucimlrepo`.
+
+datasets:
+  cancer:
+    display_name: "1. Cancer"
+    source: csv
+    path: Datasets/Cancer.csv
+    task: classification
+    target: diagnosis
+    test_size: 0.2
+    seed: 42
+    drop_columns: [id]
+    drop_unnamed: true
+    target_map: {M: 1, B: 0}
+
+  alzheimers:
+    display_name: "2. Alzhimers"
+    source: excel
+    path: Datasets/Alzhimers.xlsx
+    task: classification
+    target: Group
+    test_size: 0.2
+    seed: 42
+    drop_columns: ["Subject ID", "MRI ID", "M/F", "Hand"]
+    target_map: {Demented: 1, Nondemented: 0, Converted: 1}
+
+  adult:
+    display_name: "3. Adult"
+    source: csv
+    path: Datasets/adult_census.csv
+    task: classification
+    target: income
+    test_size: 0.2
+    seed: 42
+    na_values: ["?", " ?"]
+    target_map:
+      "<=50K": 0
+      "<=50K.": 0
+      ">50K": 1
+      ">50K.": 1
+      " <=50K": 0
+      " <=50K.": 0
+      " >50K": 1
+      " >50K.": 1
+
+  forest_cover:
+    display_name: "4. Forest Cover"
+    source: uci
+    uci_id: 31
+    task: classification
+    target: Cover_Type
+    test_size: 0.2
+    seed: 42
+
+  bank_marketing:
+    display_name: "5. Bank Marketing"
+    source: csv
+    path: Datasets/bank-full.csv
+    sep: ";"
+    task: classification
+    target: y
+    test_size: 0.2
+    seed: 42
+
+  wine_quality:
+    display_name: "6. Wine Quality"
+    source: csv
+    path: Datasets/winequality-white.csv
+    sep: ";"
+    task: classification
+    target: quality
+    test_size: 0.2
+    seed: 42
+
+  cdc_diabetes:
+    display_name: "7. CDC Diabetes"
+    source: uci
+    uci_id: 891
+    task: classification
+    target: Diabetes_binary
+    test_size: 0.2
+    seed: 42
+
+  mushroom:
+    display_name: "8. Mushroom"
+    source: uci
+    uci_id: 73
+    task: classification
+    target: poisonous
+    test_size: 0.2
+    seed: 42
+
+  magic_gamma:
+    display_name: "9. MAGIC Gamma"
+    source: uci
+    uci_id: 159
+    task: classification
+    target: class
+    test_size: 0.2
+    seed: 42
+
+  metro_interstate:
+    display_name: "10. Metro Interstate"
+    source: uci
+    uci_id: 492
+    task: regression
+    target: traffic_volume
+    test_size: 0.2
+    seed: 42
+
+  online_shopping:
+    display_name: "11. Online Shopping"
+    source: csv
+    path: Datasets/e-shop.csv
+    sep: ";"
+    task: classification
+    target: "price 2"
+    test_size: 0.2
+    seed: 42
+
+  air_quality:
+    display_name: "12. Air Quality"
+    source: uci
+    uci_id: 360
+    task: regression
+    target: AH
+    test_size: 0.2
+    seed: 42
+
+  concrete:
+    display_name: "13. Concrete"
+    source: uci
+    uci_id: 165
+    task: regression
+    target: Concrete_compressive_strength
+    test_size: 0.2
+    seed: 42
+
+  energy_efficiency:
+    display_name: "14. Energy Efficiency"
+    source: uci
+    uci_id: 242
+    task: regression
+    target: Y1
+    test_size: 0.2
+    seed: 42
+
+  real_estate:
+    display_name: "15. Real Estate"
+    source: uci
+    uci_id: 477
+    task: regression
+    target: Y_house_price_of_unit_area
+    test_size: 0.2
+    seed: 42

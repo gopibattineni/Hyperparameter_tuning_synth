@@ -1,0 +1,89 @@
+# TabDDPM — Kotelnikov et al. (ICML 2023)
+# Search space taken from paper Table 1 (authors recommend Optuna, 50 trials).
+
+generator: tabddpm
+backend: tab_ddpm
+references:
+  - "Kotelnikov, A., Baranchuk, D., Rubachev, I., & Babenko, A. (2023). TabDDPM: Modelling Tabular Data with Diffusion Models. ICML."
+  - "https://github.com/yandex-research/tab-ddpm"
+
+defaults:
+  lr: 0.001
+  batch_size: 1024
+  num_timesteps: 1000
+  steps: 10000
+  n_layers: 4
+  d_layers: 256
+  sample_proportion: 1.0
+  dropout: 0.0
+  scheduler: cosine
+  gaussian_loss_type: mse
+
+search_space:
+  lr:
+    type: float
+    suggest: float
+    low: 1.0e-5
+    high: 3.0e-3
+    log: true
+    default: 0.001
+    explanation: >
+      Learning rate — paper LogUniform[1e-5, 3e-3]. Strongest training
+      stability/quality knob for the reverse MLP.
+
+  batch_size:
+    type: categorical
+    suggest: categorical
+    choices: [256, 1024, 4096]
+    default: 1024
+    explanation: >
+      Mini-batch size — paper Cat{256, 4096}. Large batches (4096) match many
+      official configs; 256 helps smaller datasets. 1024 added as a practical
+      mid-point default for this project.
+
+  num_timesteps:
+    type: categorical
+    suggest: categorical
+    choices: [100, 1000]
+    default: 1000
+    explanation: >
+      Diffusion timesteps T — paper Cat{100, 1000}. Controls forward-process
+      granularity; 1000 is the common high-quality setting.
+
+  steps:
+    type: categorical
+    suggest: categorical
+    choices: [5000, 10000, 20000]
+    default: 10000
+    explanation: >
+      Training iterations — paper Cat{5000, 10000, 20000}. Under-training
+      dominates failure modes on complex tables.
+
+  n_layers:
+    type: categorical
+    suggest: categorical
+    choices: [2, 4, 6, 8]
+    default: 4
+    explanation: >
+      Number of MLP blocks — paper Int{2,4,6,8}. Depth of the reverse network.
+
+  d_layers:
+    type: categorical
+    suggest: categorical
+    choices: [128, 256, 512, 1024]
+    default: 256
+    explanation: >
+      Width of each MLP layer — paper Int{128,256,512,1024}. Main capacity
+      parameter (stored as repeated d_layers list in RTDL MLP).
+
+  sample_proportion:
+    type: categorical
+    suggest: categorical
+    choices: [0.25, 0.5, 1.0, 2.0, 4.0, 8.0]
+    default: 1.0
+    explanation: >
+      Synthetic sample size relative to the real training set — paper
+      Float{0.25,0.5,1,2,4,8}. Affects utility evaluation and class balance
+      when oversampling.
+
+# Fixed in paper (not tuned): dropout=0.0, scheduler=cosine, gaussian_loss=mse

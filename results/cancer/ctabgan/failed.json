@@ -1,0 +1,7 @@
+{
+  "dataset": "cancer",
+  "generator": "ctabgan",
+  "error": "No trials are completed yet.",
+  "elapsed_sec": 0.6432626415044069,
+  "status": "failed"
+}

@@ -1,0 +1,7 @@
+{
+  "dataset": "cancer",
+  "generator": "bootstrap_noise",
+  "best_value": 0.27989366674792593,
+  "elapsed_sec": 1.2535029975697398,
+  "status": "completed"
+}
