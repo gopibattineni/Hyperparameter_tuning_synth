@@ -1,0 +1,7 @@
+{
+  "dataset": "metro_interstate",
+  "generator": "tvae",
+  "best_value": 0.652519274879645,
+  "elapsed_sec": 394.8792650650721,
+  "status": "completed"
+}

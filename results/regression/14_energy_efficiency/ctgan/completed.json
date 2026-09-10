@@ -1,0 +1,7 @@
+{
+  "dataset": "energy_efficiency",
+  "generator": "ctgan",
+  "best_value": 0.6219951885288841,
+  "elapsed_sec": 1609.4054644361604,
+  "status": "completed"
+}

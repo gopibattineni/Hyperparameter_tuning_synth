@@ -1,0 +1,35 @@
+# GaussianCopula — SDV / Synthetic Data Vault
+# Refs: Patki et al. (2016); SDV GaussianCopulaSynthesizer
+# Parametric copula: limited knobs; distribution family dominates fit quality.
+
+generator: gaussian_copula
+backend: sdv.single_table.GaussianCopulaSynthesizer
+references:
+  - "Patki, N., Wedge, R., & Veeramachaneni, K. (2016). The Synthetic Data Vault."
+  - "SDV docs: GaussianCopulaSynthesizer"
+
+defaults:
+  default_distribution: beta
+  enforce_min_max_values: true
+
+search_space:
+  default_distribution:
+    type: categorical
+    suggest: categorical
+    choices: [beta, truncnorm, gaussian, gamma, uniform]
+    default: beta
+    explanation: >
+      Univariate marginal family used when column-wise distribution is not
+      specified. Strongly affects how well continuous columns are modelled;
+      beta/truncnorm often fit bounded clinical/tabular features better than
+      gaussian.
+
+  enforce_min_max_values:
+    type: categorical
+    suggest: categorical
+    choices: [true, false]
+    default: true
+    explanation: >
+      Whether sampled values are clipped to the observed training min/max.
+      Improves validity and often downstream utility; disabling can over-spread
+      tails (fidelity trade-off).

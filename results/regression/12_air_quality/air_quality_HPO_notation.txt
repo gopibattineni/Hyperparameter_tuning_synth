@@ -1,0 +1,126 @@
+================================================================================
+      AIR QUALITY — HYPERPARAMETER TUNING RESULTS (Notation File)
+================================================================================
+Dataset: Air Quality
+Task: Regression (AH)
+Tuning Framework: Optuna (TPE Sampler, MedianPruner)
+Trials per Generator: 20
+Sampling: max_samples=1000, seed=42 (random subsample for regression)
+Train/Test sizes after sampling+split: 800 / 200
+Preprocessing: impute (median/mode) + categorical label-encoding (train-fitted)
+Objective (report ranking): MAXIMIZE  0.4×Fidelity + 0.4×Utility(R²) − 0.2×PrivacyRisk
+
+SCOPE: COMPLETE with 6 generators
+  Included: GaussianCopula, CopulaGAN, CTGAN, TVAE, CTAB-GAN+, WGAN-GP
+  Excluded: ForestDiffusion, TabDDPM
+
+================================================================================
+                RESULTS RANKED BY R² OBJECTIVE (Best → Worst)
+================================================================================
+
+#1  WGAN-GP                      Objective(R²): 0.6257
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9214    |  KS Sim: 0.8743   Corr Sim: 0.9686
+    Utility(R²):   1.0000    |  TSTR R²: -13.6873   TRTR R²: -14.8077
+    Privacy Risk:  0.7144    |  MIA AUC: 0.9998   NNDR: 0.9516
+    Time: 636s (10.6 min)
+    Reference HPO objective: 0.6266  |  Utility(HPO): 1.0000
+
+    Best Hyperparameters:
+      epochs              = 1700
+      batch_size          = 128
+      latent_dim          = 32
+      hidden_dim          = 256
+      lr                  = 0.00011466158058933707
+      n_critic            = 8
+      lambda_gp           = 1.5894651519828935
+
+#2  CTGAN                        Objective(R²): 0.6148
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8829    |  KS Sim: 0.8836   Corr Sim: 0.8822
+    Utility(R²):   1.0000    |  TSTR R²: -13.0768   TRTR R²: -14.8077
+    Privacy Risk:  0.6919    |  MIA AUC: 0.9563   NNDR: 0.9541
+    Time: 1974s (32.9 min)
+    Reference HPO objective: 0.6095  |  Utility(HPO): 1.0000
+
+    Best Hyperparameters:
+      epochs              = 850
+      batch_size          = 200
+      generator_lr        = 0.00012438461452769168
+      discriminator_lr    = 0.0004386850859049654
+      generator_dim       = [256, 256]
+      discriminator_dim   = [512, 512]
+      discriminator_steps = 2
+      pac                 = 10
+
+#3  GaussianCopula               Objective(R²): 0.6091
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8753    |  KS Sim: 0.7765   Corr Sim: 0.9741
+    Utility(R²):   1.0000    |  TSTR R²: -14.3280   TRTR R²: -14.8077
+    Privacy Risk:  0.7051    |  MIA AUC: 1.0000   NNDR: 0.9829
+    Time: 17s (0.3 min)
+    Reference HPO objective: 0.6091  |  Utility(HPO): 1.0000
+
+    Best Hyperparameters:
+      default_distribution= norm
+      enforce_min_max_values= False
+
+#4  CopulaGAN                    Objective(R²): 0.5775
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8209    |  KS Sim: 0.9030   Corr Sim: 0.7388
+    Utility(R²):   0.9671    |  TSTR R²: -14.8407   TRTR R²: -14.8077
+    Privacy Risk:  0.6885    |  MIA AUC: 0.9486   NNDR: 0.9529
+    Time: 718s (12.0 min)
+    Reference HPO objective: 0.5971  |  Utility(HPO): 1.0000
+
+    Best Hyperparameters:
+      epochs              = 700
+      batch_size          = 200
+      generator_lr        = 3.287426618654979e-05
+      discriminator_lr    = 0.0005109740863606324
+      generator_dim       = [256, 256, 256]
+      discriminator_dim   = [128, 128]
+      discriminator_steps = 1
+      pac                 = 1
+      default_distribution= truncnorm
+
+#5  CTAB-GAN+                    Objective(R²): 0.5528
+    ─────────────────────────────────────────────────
+    Fidelity:      0.7384    |  KS Sim: 0.7730   Corr Sim: 0.7038
+    Utility(R²):   1.0000    |  TSTR R²: -12.0905   TRTR R²: -14.8077
+    Privacy Risk:  0.7130    |  MIA AUC: 0.9994   NNDR: 0.9555
+    Time: 1592s (26.5 min)
+    Reference HPO objective: 0.5570  |  Utility(HPO): 1.0000
+
+    Best Hyperparameters:
+      epochs              = 200
+      batch_size          = 500
+      l2scale             = 2.401563902482253e-05
+      random_dim          = 100
+      num_channels        = 128
+      class_dim           = [512, 512, 512]
+
+#6  TVAE                         Objective(R²): 0.3736
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8848    |  KS Sim: 0.8975   Corr Sim: 0.8721
+    Utility(R²):   0.3931    |  TSTR R²: -15.4147   TRTR R²: -14.8077
+    Privacy Risk:  0.6877    |  MIA AUC: 0.9394   NNDR: 0.9399
+    Time: 526s (8.8 min)
+    Reference HPO objective: 0.6319  |  Utility(HPO): 0.4707
+
+    Best Hyperparameters:
+      epochs              = 850
+      batch_size          = 1000
+      embedding_dim       = 32
+      compress_dims       = [128, 128, 128]
+      decompress_dims     = [128, 128]
+      l2scale             = 3.0522383464511917e-06
+      loss_factor         = 2
+
+================================================================================
+NOTES
+================================================================================
+  Utility uses Train-on-Synthetic-Test-on-Real (TSTR) R² vs TRTR R² gap.
+  Regressors in report: LinearRegression, RandomForest, DecisionTree.
+  ForestDiffusion / TabDDPM: Not included in this 6-generator sweep.
+  Generated: 2026-09-08 | Framework: Optuna TPE | Dataset: air_quality | Generators: 6

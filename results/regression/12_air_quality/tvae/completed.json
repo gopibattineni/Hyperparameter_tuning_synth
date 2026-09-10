@@ -1,0 +1,7 @@
+{
+  "dataset": "air_quality",
+  "generator": "tvae",
+  "best_value": 0.6318900885633514,
+  "elapsed_sec": 525.8277241569012,
+  "status": "completed"
+}

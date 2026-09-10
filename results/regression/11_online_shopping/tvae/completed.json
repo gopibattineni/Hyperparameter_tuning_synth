@@ -1,0 +1,7 @@
+{
+  "dataset": "online_shopping",
+  "generator": "tvae",
+  "best_value": 0.623685610117338,
+  "elapsed_sec": 259.432914536912,
+  "status": "completed"
+}

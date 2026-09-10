@@ -1,0 +1,18 @@
+{
+  "epochs": 800,
+  "batch_size": 200,
+  "generator_lr": 0.0009547981240330119,
+  "discriminator_lr": 0.0007791470666172787,
+  "generator_dim": [
+    256,
+    256,
+    256
+  ],
+  "discriminator_dim": [
+    256,
+    256
+  ],
+  "discriminator_steps": 1,
+  "pac": 1,
+  "default_distribution": "truncnorm"
+}

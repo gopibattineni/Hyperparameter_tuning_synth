@@ -1,0 +1,7 @@
+{
+  "dataset": "online_shopping",
+  "generator": "wgan_gp",
+  "best_value": 0.5837761885578546,
+  "elapsed_sec": 388.7927010101266,
+  "status": "completed"
+}

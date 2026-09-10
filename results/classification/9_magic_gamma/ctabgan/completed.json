@@ -1,0 +1,7 @@
+{
+  "dataset": "magic_gamma",
+  "generator": "ctabgan",
+  "best_value": 0.6152268752700354,
+  "elapsed_sec": 3885.009924846934,
+  "status": "completed"
+}

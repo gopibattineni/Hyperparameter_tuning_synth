@@ -1,0 +1,9 @@
+{
+  "epochs": 1200,
+  "batch_size": 32,
+  "latent_dim": 32,
+  "hidden_dim": 128,
+  "lr": 0.0004922695681401978,
+  "n_critic": 8,
+  "lambda_gp": 6.097617432428935
+}

@@ -1,0 +1,7 @@
+{
+  "dataset": "real_estate",
+  "generator": "wgan_gp",
+  "best_value": 0.6485462733108974,
+  "elapsed_sec": 366.53911861102097,
+  "status": "completed"
+}

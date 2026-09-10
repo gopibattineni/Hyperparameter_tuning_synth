@@ -1,0 +1,7 @@
+{
+  "dataset": "online_shopping",
+  "generator": "ctabgan",
+  "best_value": 0.18343723143864432,
+  "elapsed_sec": 1362.4537419888657,
+  "status": "completed"
+}

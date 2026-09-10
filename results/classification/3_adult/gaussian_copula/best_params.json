@@ -1,0 +1,4 @@
+{
+  "default_distribution": "gamma",
+  "enforce_min_max_values": true
+}

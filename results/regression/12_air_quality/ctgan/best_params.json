@@ -1,0 +1,16 @@
+{
+  "epochs": 850,
+  "batch_size": 200,
+  "generator_lr": 0.00012438461452769168,
+  "discriminator_lr": 0.0004386850859049654,
+  "generator_dim": [
+    256,
+    256
+  ],
+  "discriminator_dim": [
+    512,
+    512
+  ],
+  "discriminator_steps": 2,
+  "pac": 10
+}

@@ -1,0 +1,7 @@
+{
+  "dataset": "energy_efficiency",
+  "generator": "wgan_gp",
+  "best_value": 0.5976581497124598,
+  "elapsed_sec": 369.3232794201467,
+  "status": "completed"
+}

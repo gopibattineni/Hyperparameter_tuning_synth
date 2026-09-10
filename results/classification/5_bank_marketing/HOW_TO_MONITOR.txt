@@ -1,0 +1,18 @@
+Bank Marketing HPO — 6 generators, 1000 balanced samples — detached on patten
+
+PID file: bank_marketing_6gen.pid
+Log:      bank_marketing_6gen_run.log
+
+Generators: gaussian_copula, copulagan, ctgan, tvae, ctabgan, wgan_gp
+Trials: 20 each | max_samples=1000 balanced (train=800, test=200)
+
+Check:
+  ps -p $(cat results/classification/5_bank_marketing/bank_marketing_6gen.pid) -o pid,etime,pcpu,cmd
+
+Follow:
+  tail -f results/classification/5_bank_marketing/bank_marketing_6gen_run.log
+
+Done when all completed.json exist under:
+  results/classification/5_bank_marketing/{generator}/
+
+Safe to lock PC — process parent is systemd. Keep patten powered on.

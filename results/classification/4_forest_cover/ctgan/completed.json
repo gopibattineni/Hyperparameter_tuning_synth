@@ -1,0 +1,7 @@
+{
+  "dataset": "forest_cover",
+  "generator": "ctgan",
+  "best_value": 0.6276092844593865,
+  "elapsed_sec": 6060.50892337109,
+  "status": "completed"
+}

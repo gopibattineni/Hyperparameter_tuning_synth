@@ -1,0 +1,7 @@
+{
+  "dataset": "cancer",
+  "generator": "forest_diffusion",
+  "best_value": 0.3174015046180153,
+  "elapsed_sec": 12256.501432771794,
+  "status": "completed"
+}

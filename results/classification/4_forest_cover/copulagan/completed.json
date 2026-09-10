@@ -1,0 +1,7 @@
+{
+  "dataset": "forest_cover",
+  "generator": "copulagan",
+  "best_value": 0.5620055378752231,
+  "elapsed_sec": 2566.610530318925,
+  "status": "completed"
+}

@@ -1,0 +1,7 @@
+{
+  "dataset": "real_estate",
+  "generator": "gaussian_copula",
+  "best_value": 0.5315075120576751,
+  "elapsed_sec": 10.394969670102,
+  "status": "completed"
+}

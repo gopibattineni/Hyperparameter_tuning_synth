@@ -1,0 +1,7 @@
+{
+  "dataset": "metro_interstate",
+  "generator": "gaussian_copula",
+  "best_value": 0.41443822935879804,
+  "elapsed_sec": 13.335480839014053,
+  "status": "completed"
+}

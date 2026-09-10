@@ -1,0 +1,7 @@
+{
+  "dataset": "cancer",
+  "generator": "tvae",
+  "best_value": 0.6531851972959526,
+  "elapsed_sec": 1250.5355845950544,
+  "status": "completed"
+}

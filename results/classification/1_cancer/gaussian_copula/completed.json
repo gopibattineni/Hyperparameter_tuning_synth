@@ -1,0 +1,7 @@
+{
+  "dataset": "cancer",
+  "generator": "gaussian_copula",
+  "best_value": 0.5069075196006584,
+  "elapsed_sec": 30.022657382301986,
+  "status": "completed"
+}

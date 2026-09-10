@@ -1,0 +1,9 @@
+index=8
+dataset=mushroom
+folder=8_mushroom
+phase=phase1_classification
+max_samples=1000 (balanced for classification)
+generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp
+n_trials=20
+completed_generators=0
+launch=start_mushroom_6gen.sh (detached via setsid on patten)

@@ -1,0 +1,7 @@
+{
+  "dataset": "mushroom",
+  "generator": "wgan_gp",
+  "best_value": 0.5960102175261399,
+  "elapsed_sec": 633.5271296249703,
+  "status": "completed"
+}

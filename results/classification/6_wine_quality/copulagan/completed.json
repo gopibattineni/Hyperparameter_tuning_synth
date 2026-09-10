@@ -1,0 +1,7 @@
+{
+  "dataset": "wine_quality",
+  "generator": "copulagan",
+  "best_value": 0.5804667803990133,
+  "elapsed_sec": 1133.4885508690495,
+  "status": "completed"
+}

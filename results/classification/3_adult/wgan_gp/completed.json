@@ -1,0 +1,7 @@
+{
+  "dataset": "adult",
+  "generator": "wgan_gp",
+  "best_value": 0.5736618246996605,
+  "elapsed_sec": 491.5157078219927,
+  "status": "completed"
+}

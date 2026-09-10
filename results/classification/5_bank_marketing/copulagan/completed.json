@@ -1,0 +1,7 @@
+{
+  "dataset": "bank_marketing",
+  "generator": "copulagan",
+  "best_value": 0.5538293692048961,
+  "elapsed_sec": 1053.9335425430909,
+  "status": "completed"
+}

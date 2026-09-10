@@ -1,0 +1,10 @@
+index=14
+dataset=energy_efficiency
+folder=14_energy_efficiency
+phase=phase2_regression
+task=regression
+target=Y1
+max_samples=1000
+generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp
+n_trials=20
+launch=start_energy_efficiency_6gen.sh (detached via setsid on patten)

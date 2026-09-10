@@ -1,0 +1,7 @@
+{
+  "dataset": "alzheimers",
+  "generator": "wgan_gp",
+  "best_value": 0.23326777427502268,
+  "elapsed_sec": 405.92546240100637,
+  "status": "completed"
+}

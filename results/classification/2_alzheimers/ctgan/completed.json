@@ -1,0 +1,7 @@
+{
+  "dataset": "alzheimers",
+  "generator": "ctgan",
+  "best_value": 0.6277638991111014,
+  "elapsed_sec": 1673.9669759813696,
+  "status": "completed"
+}

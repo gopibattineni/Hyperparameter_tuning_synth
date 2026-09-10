@@ -1,0 +1,140 @@
+================================================================================
+      WINE QUALITY — HYPERPARAMETER TUNING RESULTS (Notation File)
+================================================================================
+Dataset: MAGIC Gamma
+Task: Multi-class Classification (quality score)
+Tuning Framework: Optuna (TPE Sampler, MedianPruner)
+Trials per Generator: 20
+Sampling: max_samples=1000, balance_classes=true, seed=42
+Train/Test sizes after sampling+split: 800 / 200
+Preprocessing: impute (median/mode) + categorical label-encoding (train-fitted)
+Objective (report ranking): MAXIMIZE  0.4×Fidelity + 0.4×Utility(Accuracy) − 0.2×PrivacyRisk
+Note: Optuna search itself used F1-based utility; Acc utility recomputed for this report.
+
+SCOPE: COMPLETE with 6 generators
+  Included: GaussianCopula, CopulaGAN, CTGAN, TVAE, CTAB-GAN+, WGAN-GP
+  Excluded: ForestDiffusion, TabDDPM
+
+================================================================================
+                RESULTS RANKED BY ACCURACY OBJECTIVE (Best → Worst)
+================================================================================
+
+#1  WGAN-GP                      Objective(Acc): 0.6672
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9492    |  KS Sim: 0.9449   Corr Sim: 0.9536
+    Utility(Acc):  1.0000    |  TSTR Acc: 0.7683   TRTR Acc: 0.7650
+    Privacy Risk:  0.5626    |  MIA AUC: 0.6655   NNDR: 0.9006
+    Time: 574s (9.6 min)
+    Reference F1-HPO objective: 0.6687  |  Utility(F1): 1.0000
+
+    Best Hyperparameters:
+      epochs              = 2000
+      batch_size          = 128
+      latent_dim          = 32
+      hidden_dim          = 256
+      lr                  = 0.0004922695681401978
+      n_critic            = 7
+      lambda_gp           = 14.342657154622337
+
+#2  TVAE                         Objective(Acc): 0.6574
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9387    |  KS Sim: 0.9223   Corr Sim: 0.9551
+    Utility(Acc):  1.0000    |  TSTR Acc: 0.7700   TRTR Acc: 0.7650
+    Privacy Risk:  0.5906    |  MIA AUC: 0.7251   NNDR: 0.9065
+    Time: 884s (14.7 min)
+    Reference F1-HPO objective: 0.6619  |  Utility(F1): 0.9978
+
+    Best Hyperparameters:
+      epochs              = 700
+      batch_size          = 100
+      embedding_dim       = 128
+      compress_dims       = [128, 128, 128]
+      decompress_dims     = [256, 256]
+      l2scale             = 0.0001922280863901384
+      loss_factor         = 5
+
+#3  CTGAN                        Objective(Acc): 0.6524
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9558    |  KS Sim: 0.9594   Corr Sim: 0.9521
+    Utility(Acc):  0.9767    |  TSTR Acc: 0.7417   TRTR Acc: 0.7650
+    Privacy Risk:  0.6031    |  MIA AUC: 0.7677   NNDR: 0.9359
+    Time: 2917s (48.6 min)
+    Reference F1-HPO objective: 0.6508  |  Utility(F1): 0.9583
+
+    Best Hyperparameters:
+      epochs              = 900
+      batch_size          = 200
+      generator_lr        = 3.236787128689684e-05
+      discriminator_lr    = 0.0005788871728535522
+      generator_dim       = [256, 256, 256]
+      discriminator_dim   = [512, 512]
+      discriminator_steps = 4
+      pac                 = 1
+
+#4  GaussianCopula               Objective(Acc): 0.6353
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9365    |  KS Sim: 0.9166   Corr Sim: 0.9564
+    Utility(Acc):  0.9883    |  TSTR Acc: 0.7533   TRTR Acc: 0.7650
+    Privacy Risk:  0.6733    |  MIA AUC: 0.9111   NNDR: 0.9408
+    Time: 28s (0.5 min)
+    Reference F1-HPO objective: 0.6299  |  Utility(F1): 0.9750
+
+    Best Hyperparameters:
+      default_distribution= beta
+      enforce_min_max_values= False
+
+#5  CTAB-GAN+                    Objective(Acc): 0.6001
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8727    |  KS Sim: 0.8364   Corr Sim: 0.9089
+    Utility(Acc):  0.9783    |  TSTR Acc: 0.7433   TRTR Acc: 0.7650
+    Privacy Risk:  0.7017    |  MIA AUC: 0.9683   NNDR: 0.9416
+    Time: 3885s (64.8 min)
+    Reference F1-HPO objective: 0.6152  |  Utility(F1): 0.9640
+
+    Best Hyperparameters:
+      epochs              = 300
+      batch_size          = 500
+      random_dim          = 100
+      num_channels        = 128
+      class_dim           = [512, 512, 512]
+      l2scale             = 2.7293115911778183e-05
+
+#6  CopulaGAN                    Objective(Acc): 0.5274
+    ─────────────────────────────────────────────────
+    Fidelity:      0.7970    |  KS Sim: 0.8564   Corr Sim: 0.7377
+    Utility(Acc):  0.8717    |  TSTR Acc: 0.6367   TRTR Acc: 0.7650
+    Privacy Risk:  0.7005    |  MIA AUC: 0.9847   NNDR: 0.9728
+    Time: 817s (13.6 min)
+    Reference F1-HPO objective: 0.5403  |  Utility(F1): 0.8552
+
+    Best Hyperparameters:
+      epochs              = 300
+      batch_size          = 100
+      generator_lr        = 5.4041038546473305e-05
+      discriminator_lr    = 8.168455894760161e-05
+      generator_dim       = [128, 128]
+      discriminator_dim   = [256, 256, 256]
+      discriminator_steps = 1
+      pac                 = 10
+      default_distribution= beta
+
+================================================================================
+                        SKIPPED / EXCLUDED
+================================================================================
+
+  ForestDiffusion: Not included in this 6-generator magic_gamma sweep.
+  TabDDPM:         Dependencies not installed / excluded from phase-1 sweeps.
+
+================================================================================
+                        KEY OBSERVATIONS
+================================================================================
+
+  1. Winner by Acc objective: WGAN-GP (0.6672).
+  2. Top fidelity: CTGAN (0.9558).
+  3. Best Acc utility: WGAN-GP (1.0000).
+  4. Lowest privacy risk: WGAN-GP (0.5626).
+  5. Ranking uses Accuracy utility; F1-HPO objectives kept as reference only.
+
+================================================================================
+  Generated: 2026-09-04 | Framework: Optuna TPE | Dataset: magic_gamma | Generators: 6
+================================================================================

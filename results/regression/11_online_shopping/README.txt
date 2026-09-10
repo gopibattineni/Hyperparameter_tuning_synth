@@ -1,0 +1,14 @@
+index=11
+dataset=online_shopping
+folder=11_online_shopping
+phase=phase2_regression
+task=regression
+target=price 2
+max_samples=1000
+drop_columns=["session ID", "page 2 (clothing model)"]
+max_int_categories=60
+categorical_columns=["year", "day", "order"]
+generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp
+n_trials=20
+note=full fair rerun after CTAB-GAN sampling fix
+launch=start_online_shopping_6gen.sh (detached via setsid on patten)

@@ -1,0 +1,7 @@
+{
+  "dataset": "air_quality",
+  "generator": "ctgan",
+  "best_value": 0.609483274225159,
+  "elapsed_sec": 1974.2579956720583,
+  "status": "completed"
+}

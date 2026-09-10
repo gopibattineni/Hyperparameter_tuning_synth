@@ -18,11 +18,22 @@ def _sdv_available() -> bool:
         return False
 
 
-def _build_metadata(df: pd.DataFrame):
+def _build_metadata(df: pd.DataFrame, dataset_spec: Any = None):
     from sdv.metadata import SingleTableMetadata
 
     meta = SingleTableMetadata()
     meta.detect_from_dataframe(df)
+    if dataset_spec is not None:
+        for col in getattr(dataset_spec, "categorical_columns", ()) or ():
+            if col in df.columns:
+                meta.update_column(col, sdtype="categorical")
+        target = getattr(dataset_spec, "target", None)
+        if (
+            target
+            and getattr(dataset_spec, "task", None) == "classification"
+            and target in df.columns
+        ):
+            meta.update_column(target, sdtype="categorical")
     return meta
 
 
@@ -42,7 +53,7 @@ class _SDVBase(BaseGenerator):
         if not self.is_available():
             raise RuntimeError("sdv is not installed. pip install sdv")
         self._columns = list(train_df.columns)
-        meta = _build_metadata(train_df)
+        meta = _build_metadata(train_df, metadata)
         # Filter params to known synthesizer kwargs
         params = dict(self.params)
         self._synth = self._make_synthesizer(meta, params)
@@ -94,10 +105,13 @@ class CTGANGenerator(_SDVBase):
             "generator_dim", "discriminator_dim", "discriminator_steps", "pac",
         ]
         kwargs = {k: params[k] for k in keys if k in params}
-        # Ensure list dims
+        # Ensure list dims (Optuna may store them as strings)
         for d in ("generator_dim", "discriminator_dim"):
-            if d in kwargs and isinstance(kwargs[d], tuple):
-                kwargs[d] = list(kwargs[d])
+            if d in kwargs:
+                if isinstance(kwargs[d], str):
+                    kwargs[d] = eval(kwargs[d], {"__builtins__": {}})  # noqa: S307
+                if isinstance(kwargs[d], tuple):
+                    kwargs[d] = list(kwargs[d])
         return CTGANSynthesizer(metadata, **kwargs)
 
 
@@ -115,8 +129,11 @@ class CopulaGANGenerator(_SDVBase):
         ]
         kwargs = {k: params[k] for k in keys if k in params}
         for d in ("generator_dim", "discriminator_dim"):
-            if d in kwargs and isinstance(kwargs[d], tuple):
-                kwargs[d] = list(kwargs[d])
+            if d in kwargs:
+                if isinstance(kwargs[d], str):
+                    kwargs[d] = eval(kwargs[d], {"__builtins__": {}})  # noqa: S307
+                if isinstance(kwargs[d], tuple):
+                    kwargs[d] = list(kwargs[d])
         return CopulaGANSynthesizer(metadata, **kwargs)
 
 
@@ -133,6 +150,9 @@ class TVAEGenerator(_SDVBase):
         ]
         kwargs = {k: params[k] for k in keys if k in params}
         for d in ("compress_dims", "decompress_dims"):
-            if d in kwargs and isinstance(kwargs[d], tuple):
-                kwargs[d] = list(kwargs[d])
+            if d in kwargs:
+                if isinstance(kwargs[d], str):
+                    kwargs[d] = eval(kwargs[d], {"__builtins__": {}})  # noqa: S307
+                if isinstance(kwargs[d], tuple):
+                    kwargs[d] = list(kwargs[d])
         return TVAESynthesizer(metadata, **kwargs)

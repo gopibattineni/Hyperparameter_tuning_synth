@@ -24,14 +24,56 @@ except ImportError:  # pragma: no cover
 COMPLETED_MARKER = "completed.json"
 
 
-def run_dir(results_root: Path, dataset: str, generator: str) -> Path:
-    """Return ``results/{dataset}/{generator}/``."""
-    return Path(results_root) / dataset / generator
+def _dataset_config() -> dict:
+    try:
+        from datasets.loader import load_dataset_config
+
+        return load_dataset_config() or {}
+    except Exception:
+        return {}
 
 
-def is_completed(results_root: Path, dataset: str, generator: str) -> bool:
+def dataset_index(dataset: str) -> int:
+    """1-based dataset number from ``config/datasets.yaml`` order."""
+    keys = list(_dataset_config().keys())
+    if dataset in keys:
+        return keys.index(dataset) + 1
+    return 0
+
+
+def dataset_folder(dataset: str) -> str:
+    """Folder name ``{n}_{dataset}`` e.g. ``1_cancer``, ``15_real_estate``."""
+    n = dataset_index(dataset)
+    return f"{n}_{dataset}" if n else dataset
+
+
+def resolve_task(dataset: str, task: str | None = None) -> str:
+    """Map a dataset to ``classification`` or ``regression`` result folder."""
+    if task:
+        return "regression" if str(task).lower() == "regression" else "classification"
+    cfg = _dataset_config().get(dataset) or {}
+    return "regression" if str(cfg.get("task", "")).lower() == "regression" else "classification"
+
+
+def run_dir(
+    results_root: Path,
+    dataset: str,
+    generator: str,
+    task: str | None = None,
+) -> Path:
+    """Return ``results/{classification|regression}/{n}_{dataset}/{generator}/``."""
+    category = resolve_task(dataset, task)
+    return Path(results_root) / category / dataset_folder(dataset) / generator
+
+
+def is_completed(
+    results_root: Path,
+    dataset: str,
+    generator: str,
+    task: str | None = None,
+) -> bool:
     """Resume helper — True if a successful completed marker exists."""
-    marker = run_dir(results_root, dataset, generator) / COMPLETED_MARKER
+    marker = run_dir(results_root, dataset, generator, task=task) / COMPLETED_MARKER
     return marker.is_file()
 
 

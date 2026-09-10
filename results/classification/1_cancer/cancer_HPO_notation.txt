@@ -1,0 +1,279 @@
+================================================================================
+      CANCER DATASET — HYPERPARAMETER TUNING RESULTS (Notation File)
+================================================================================
+Dataset: Breast Cancer Wisconsin (Diagnostic)
+Task: Binary Classification
+Tuning Framework: Optuna (TPE Sampler, MedianPruner)
+Trials per Generator: 20
+Objective: MAXIMIZE  0.4 × Fidelity + 0.4 × Utility − 0.2 × Privacy Risk
+
+================================================================================
+                         OBJECTIVE FORMULA
+================================================================================
+
+  Objective = 0.4 × F + 0.4 × U − 0.2 × P
+
+  Where:
+    F (Fidelity)     = avg(KS_Similarity, Correlation_Similarity)
+                       How statistically similar is the synthetic data to real?
+                       Range: [0, 1], higher = better
+
+    U (Utility)      = clip(TSTR_F1 / TRTR_F1, 0, 1)
+                       Can a model trained on synthetic data perform as well as
+                       one trained on real data?
+                       Range: [0, 1], higher = better
+
+    P (Privacy Risk) = composite of MIA_AUC, NNDR
+                       How much does the synthetic data leak about the training
+                       set? Membership inference attack success rate.
+                       Range: [0, 1], higher = MORE risky (penalized)
+
+  Sub-metrics:
+    KS Similarity      1 − Kolmogorov-Smirnov distance, averaged across columns
+    Corr Similarity    Correlation matrix similarity (real vs synthetic)
+    MIA AUC            Membership Inference Attack AUC (higher = riskier)
+    NNDR               Nearest Neighbor Distance Ratio (closer to 1 = more unique)
+    DCR                Distance to Closest Record (higher = more private)
+    TSTR F1            Train-on-Synthetic, Test-on-Real F1 score
+    TRTR F1            Train-on-Real, Test-on-Real F1 score (ceiling)
+    F1 Gap             TRTR_F1 − TSTR_F1 (smaller = better)
+
+================================================================================
+                RESULTS RANKED BY OBJECTIVE (Best → Worst)
+================================================================================
+
+#1  TVAE                           Objective: 0.6399
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9203    |  KS Sim: 0.9261   Corr Sim: 0.9145
+    Utility:       0.9778    |  TSTR F1: 0.9175   TRTR F1: 0.9396
+    Privacy Risk:  0.5967    |  MIA AUC: 0.7609   NNDR: 0.9459
+    Time: 1251s (20.9 min)
+
+    Best Hyperparameters:
+      epochs            = 850
+      batch_size        = 100
+      embedding_dim     = 64
+      compress_dims     = [256, 256]
+      decompress_dims   = [256, 256]
+      l2scale           = 2.568e-06
+      loss_factor       = 1
+
+    Search Space:
+      epochs            int    [100, 1000] step=50     (default: 300)
+      batch_size        cat    {100, 200, 500, 1000}    (default: 500)
+      embedding_dim     cat    {32, 64, 128, 256}       (default: 128)
+      compress_dims     cat    {[64,64], [128,128], [256,256], [128,128,128]}
+      decompress_dims   cat    {[64,64], [128,128], [256,256], [128,128,128]}
+      l2scale           float  [1e-6, 1e-3] log         (default: 1e-5)
+      loss_factor       cat    {1, 2, 5, 10}            (default: 2)
+
+    Notes: Winner. Near-perfect utility (TSTR F1 ≈ TRTR F1) with strong
+    fidelity. Moderate privacy risk. Longer training (850 epochs vs 300
+    default) with smaller batches and reduced weight decay helped.
+
+
+#2  CTGAN                          Objective: 0.6310
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9057    |  KS Sim: 0.9048   Corr Sim: 0.9066
+    Utility:       1.0000    |  TSTR F1: 0.9479   TRTR F1: 0.9396
+    Privacy Risk:  0.6563    |  MIA AUC: 0.8899   NNDR: 0.9621
+    Time: 2472s (41.2 min)
+
+    Best Hyperparameters:
+      epochs            = 1000
+      batch_size        = 200
+      generator_lr      = 5.463e-05
+      discriminator_lr  = 1.440e-04
+      generator_dim     = [256, 256, 256]
+      discriminator_dim = [512, 512]
+      discriminator_steps = 3
+      pac               = 1
+
+    Search Space:
+      epochs            int    [100, 1000] step=50      (default: 300)
+      batch_size        cat    {100, 200, 500, 1000}     (default: 500)
+      generator_lr      float  [1e-5, 1e-3] log          (default: 2e-4)
+      discriminator_lr  float  [1e-5, 1e-3] log          (default: 2e-4)
+      generator_dim     cat    {[128,128], [256,256], [256,256,256], [512,512]}
+      discriminator_dim cat    {[128,128], [256,256], [256,256,256], [512,512]}
+      discriminator_steps int  [1, 5]                    (default: 1)
+      pac               cat    {1, 5, 10}                (default: 10)
+
+    Notes: Perfect utility (TSTR F1 > TRTR F1). Higher privacy risk than
+    TVAE due to stronger MIA AUC. Tuned to max epochs, smaller batches,
+    lower LRs, deeper networks, and more discriminator steps than defaults.
+
+
+#3  CopulaGAN                     Objective: 0.5831
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8290    |  KS Sim: 0.8091   Corr Sim: 0.8488
+    Utility:       0.9785    |  TSTR F1: 0.9182   TRTR F1: 0.9396
+    Privacy Risk:  0.6996    |  MIA AUC: 0.9745   NNDR: 0.9588
+    Time: 1035s (17.2 min)
+
+    Best Hyperparameters:
+      epochs            = 800
+      batch_size        = 200
+      generator_lr      = 9.548e-04
+      discriminator_lr  = 7.791e-04
+      generator_dim     = [256, 256, 256]
+      discriminator_dim = [256, 256]
+      discriminator_steps = 1
+      pac               = 1
+      default_distribution = truncnorm
+
+    Search Space:
+      epochs            int    [100, 800] step=50       (default: 300)
+      batch_size        cat    {100, 200, 500}           (default: 500)
+      generator_lr      float  [1e-5, 1e-3] log          (default: 2e-4)
+      discriminator_lr  float  [1e-5, 1e-3] log          (default: 2e-4)
+      generator_dim     cat    {[128,128], [256,256], [256,256,256]}
+      discriminator_dim cat    {[128,128], [256,256], [256,256,256]}
+      pac               cat    {1, 5, 10}                (default: 10)
+      default_distribution cat {beta, truncnorm, norm, gamma}
+
+    Notes: High utility but lower fidelity than TVAE/CTGAN. Highest privacy
+    risk (MIA AUC 0.97). Higher LRs than CTGAN; truncnorm marginal chosen
+    over beta (copula preprocessing).
+
+
+#4  CTAB-GAN+                     Objective: 0.5211
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8133    |  KS Sim: 0.7886   Corr Sim: 0.8380
+    Utility:       0.8435    |  TSTR F1: 0.7832   TRTR F1: 0.9396
+    Privacy Risk:  0.7083    |  MIA AUC: 0.9999   NNDR: 0.9723
+    Time: 2705s (45.1 min)
+
+    Best Hyperparameters:
+      epochs            = 300
+      batch_size        = 500
+      random_dim        = 100
+      num_channels      = 128
+      class_dim         = [512, 512, 512]
+      l2scale           = 2.729e-05
+
+    Search Space:
+      epochs            int    [100, 300] step=25       (default: 150)
+      batch_size        cat    {50, 100, 500}            (default: 500)
+      random_dim        cat    {50, 100, 150}            (default: 100)
+      num_channels      cat    {32, 64, 128}             (default: 64)
+      class_dim         cat    {[128,128,128], [256,256,256,256], [512,512,512]}
+      l2scale           float  [1e-6, 1e-4] log          (default: 1e-5)
+
+    Notes: Worst privacy (MIA AUC ≈ 1.0 — near-perfect memorization).
+    Doubled num_channels (128 vs 64 default) and larger classifier (512x3).
+    Moderate utility and fidelity.
+
+
+#5  GaussianCopula                Objective: 0.5069
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9187    |  KS Sim: 0.9097   Corr Sim: 0.9276
+    Utility:       0.6822    |  TSTR F1: 0.6218   TRTR F1: 0.9396
+    Privacy Risk:  0.6672    |  MIA AUC: 0.9007   NNDR: 0.9440
+    Time: 30s (0.5 min)
+
+    Best Hyperparameters:
+      default_distribution   = beta
+      enforce_min_max_values  = false
+
+    Search Space:
+      default_distribution  cat  {beta, truncnorm, norm, gamma, uniform}
+      enforce_min_max_values cat  {true, false}
+
+    Notes: Extremely fast (30 seconds). Only 2 tunable parameters. Good
+    fidelity (0.92) but poor utility (F1 gap 0.32). Beta distribution
+    with unclamped min/max performed best. Good baseline generator.
+
+
+#6  ForestDiffusion               Objective: 0.3174
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9527    |  KS Sim: 0.9403   Corr Sim: 0.9651
+    Utility:       0.0604    |  TSTR F1: 0.0000   TRTR F1: 0.9396
+    Privacy Risk:  0.4391    |  MIA AUC: 0.4326   NNDR: 0.9240
+    Time: 12257s (3.4 hrs)
+
+    Best Hyperparameters:
+      n_t             = 100
+      duplicate_K     = 100
+      diffusion_type  = flow
+      max_depth       = 4
+      n_estimators    = 50
+      eta             = 0.3861
+
+    Search Space:
+      n_t             int    [20, 100] step=10          (default: 50)
+      duplicate_K     cat    {50, 75, 100, 150}          (default: 100)
+      diffusion_type  cat    {vp, flow}                  (default: vp)
+      max_depth       int    [3, 10]                     (default: 7)
+      n_estimators    cat    {50, 100, 200}              (default: 100)
+      eta             float  [0.05, 0.5] log             (default: 0.3)
+
+    Notes: Best fidelity (0.95) and best privacy (lowest MIA AUC 0.43)
+    but zero utility (TSTR F1 = 0). Synthetic data preserves distributions
+    but doesn't train useful classifiers. Very slow (3.4 hours). Flow
+    matching chosen over VP diffusion; shallow trees (depth 4).
+
+
+#7  WGAN-GP                       Objective: 0.3057
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9487    |  KS Sim: 0.9379   Corr Sim: 0.9595
+    Utility:       0.0604    |  TSTR F1: 0.0000   TRTR F1: 0.9396
+    Privacy Risk:  0.4897    |  MIA AUC: 0.5367   NNDR: 0.9289
+    Time: 1526s (25.4 min)
+
+    Best Hyperparameters:
+      epochs          = 1700
+      batch_size      = 128
+      latent_dim      = 64
+      hidden_dim      = 256
+      lr              = 1.334e-04
+      n_critic        = 10
+      lambda_gp       = 8.672
+
+    Search Space:
+      epochs          int    [200, 2000] step=100       (default: 500)
+      batch_size      cat    {32, 64, 128, 256}          (default: 64)
+      latent_dim      cat    {32, 64, 128}               (default: 64)
+      hidden_dim      cat    {64, 128, 256}              (default: 128)
+      lr              float  [1e-5, 5e-4] log            (default: 1e-4)
+      n_critic        int    [1, 10]                     (default: 5)
+      lambda_gp       float  [1.0, 20.0]                (default: 10.0)
+
+    Notes: Excellent fidelity (0.95) and good privacy but zero utility
+    (same as ForestDiffusion). Long training (1700 epochs) with larger
+    hidden layers and max critic steps. Gradient penalty reduced from
+    default 10 to 8.67.
+
+
+================================================================================
+                        SKIPPED GENERATORS
+================================================================================
+
+  TabDDPM: Dependencies not installed (requires libzero + rtdl with specific
+           NumPy version constraints). Skipped automatically.
+
+================================================================================
+                        KEY OBSERVATIONS
+================================================================================
+
+  1. TVAE and CTGAN dominate — both achieve high fidelity AND utility.
+     TVAE edges out CTGAN due to lower privacy risk.
+
+  2. ForestDiffusion and WGAN-GP produce the most realistic-looking data
+     (highest fidelity, lowest privacy risk) but generate data with ZERO
+     downstream ML utility. The synthetic data doesn't preserve decision
+     boundaries.
+
+  3. CopulaGAN and CTAB-GAN+ have high privacy risk (MIA AUC > 0.97),
+     meaning a membership inference attack can almost perfectly detect
+     training records — a concern for sensitive data.
+
+  4. GaussianCopula is the fastest generator (30s) and makes a good
+     baseline, though utility lags behind GAN-based methods.
+
+  5. Longer training (more epochs) consistently helped across generators
+     that support it. Smaller batch sizes also tended to improve results.
+
+================================================================================
+  Generated: 2026-08-19 | Framework: Optuna TPE | Dataset: cancer
+================================================================================

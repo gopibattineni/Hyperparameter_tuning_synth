@@ -1,0 +1,7 @@
+{
+  "dataset": "real_estate",
+  "generator": "ctabgan",
+  "best_value": 0.6129782462759752,
+  "elapsed_sec": 546.0123894677963,
+  "status": "completed"
+}

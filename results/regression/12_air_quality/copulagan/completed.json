@@ -1,0 +1,7 @@
+{
+  "dataset": "air_quality",
+  "generator": "copulagan",
+  "best_value": 0.5971259195947808,
+  "elapsed_sec": 718.1777223481331,
+  "status": "completed"
+}

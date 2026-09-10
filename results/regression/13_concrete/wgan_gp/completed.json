@@ -1,0 +1,7 @@
+{
+  "dataset": "concrete",
+  "generator": "wgan_gp",
+  "best_value": 0.6173146354220536,
+  "elapsed_sec": 386.68849539617077,
+  "status": "completed"
+}

@@ -1,0 +1,140 @@
+================================================================================
+      WINE QUALITY — HYPERPARAMETER TUNING RESULTS (Notation File)
+================================================================================
+Dataset: Mushroom
+Task: Multi-class Classification (quality score)
+Tuning Framework: Optuna (TPE Sampler, MedianPruner)
+Trials per Generator: 20
+Sampling: max_samples=1000, balance_classes=true, seed=42
+Train/Test sizes after sampling+split: 800 / 200
+Preprocessing: impute (median/mode) + categorical label-encoding (train-fitted)
+Objective (report ranking): MAXIMIZE  0.4×Fidelity + 0.4×Utility(Accuracy) − 0.2×PrivacyRisk
+Note: Optuna search itself used F1-based utility; Acc utility recomputed for this report.
+
+SCOPE: COMPLETE with 6 generators
+  Included: GaussianCopula, CopulaGAN, CTGAN, TVAE, CTAB-GAN+, WGAN-GP
+  Excluded: ForestDiffusion, TabDDPM
+
+================================================================================
+                RESULTS RANKED BY ACCURACY OBJECTIVE (Best → Worst)
+================================================================================
+
+#1  TVAE                         Objective(Acc): 0.6423
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9439    |  KS Sim: 0.9512   Corr Sim: 0.9367
+    Utility(Acc):  0.9700    |  TSTR Acc: 0.9483   TRTR Acc: 0.9783
+    Privacy Risk:  0.6162    |  MIA AUC: 0.7615   NNDR: 0.8819
+    Time: 621s (10.4 min)
+    Reference F1-HPO objective: 0.6501  |  Utility(F1): 0.9676
+
+    Best Hyperparameters:
+      epochs              = 600
+      batch_size          = 100
+      embedding_dim       = 128
+      compress_dims       = [64, 64]
+      decompress_dims     = [256, 256]
+      l2scale             = 0.00033229990885595586
+      loss_factor         = 5
+
+#2  CopulaGAN                    Objective(Acc): 0.6361
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9348    |  KS Sim: 0.9410   Corr Sim: 0.9285
+    Utility(Acc):  0.9633    |  TSTR Acc: 0.9417   TRTR Acc: 0.9783
+    Privacy Risk:  0.6156    |  MIA AUC: 0.6980   NNDR: 0.7779
+    Time: 1807s (30.1 min)
+    Reference F1-HPO objective: 0.6329  |  Utility(F1): 0.9632
+
+    Best Hyperparameters:
+      epochs              = 650
+      batch_size          = 200
+      generator_lr        = 0.0005323617594751496
+      discriminator_lr    = 0.00017643967683381525
+      generator_dim       = [128, 128]
+      discriminator_dim   = [256, 256]
+      discriminator_steps = 1
+      pac                 = 1
+      default_distribution= gamma
+
+#3  CTGAN                        Objective(Acc): 0.6139
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9480    |  KS Sim: 0.9595   Corr Sim: 0.9364
+    Utility(Acc):  0.8933    |  TSTR Acc: 0.8717   TRTR Acc: 0.9783
+    Privacy Risk:  0.6133    |  MIA AUC: 0.7796   NNDR: 0.9215
+    Time: 4568s (76.1 min)
+    Reference F1-HPO objective: 0.6337  |  Utility(F1): 0.8819
+
+    Best Hyperparameters:
+      epochs              = 950
+      batch_size          = 200
+      generator_lr        = 5.9601188919609734e-05
+      discriminator_lr    = 0.00017175482489007385
+      generator_dim       = [256, 256, 256]
+      discriminator_dim   = [512, 512]
+      discriminator_steps = 3
+      pac                 = 1
+
+#4  WGAN-GP                      Objective(Acc): 0.6081
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9328    |  KS Sim: 0.9071   Corr Sim: 0.9584
+    Utility(Acc):  0.9417    |  TSTR Acc: 0.9200   TRTR Acc: 0.9783
+    Privacy Risk:  0.7082    |  MIA AUC: 0.9923   NNDR: 0.9600
+    Time: 634s (10.6 min)
+    Reference F1-HPO objective: 0.5960  |  Utility(F1): 0.9383
+
+    Best Hyperparameters:
+      epochs              = 1500
+      batch_size          = 64
+      latent_dim          = 128
+      hidden_dim          = 256
+      lr                  = 0.0003246500718347965
+      n_critic            = 7
+      lambda_gp           = 6.955705467022533
+
+#5  GaussianCopula               Objective(Acc): 0.5377
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8972    |  KS Sim: 0.9418   Corr Sim: 0.8525
+    Utility(Acc):  0.7983    |  TSTR Acc: 0.7767   TRTR Acc: 0.9783
+    Privacy Risk:  0.7023    |  MIA AUC: 0.9914   NNDR: 0.9780
+    Time: 32s (0.5 min)
+    Reference F1-HPO objective: 0.5364  |  Utility(F1): 0.7949
+
+    Best Hyperparameters:
+      default_distribution= norm
+      enforce_min_max_values= False
+
+#6  CTAB-GAN+                    Objective(Acc): 0.3459
+    ─────────────────────────────────────────────────
+    Fidelity:      0.5000    |  KS Sim: 0.5000   Corr Sim: 0.5000
+    Utility(Acc):  0.7150    |  TSTR Acc: 0.6933   TRTR Acc: 0.9783
+    Privacy Risk:  0.7006    |  MIA AUC: 0.9875   NNDR: 0.9773
+    Time: 2579s (43.0 min)
+    Reference F1-HPO objective: 0.0703  |  Utility(F1): 0.0219
+
+    Best Hyperparameters:
+      epochs              = 250
+      batch_size          = 500
+      random_dim          = 150
+      num_channels        = 64
+      class_dim           = [128, 128, 128]
+      l2scale             = 1.3400367243354813e-06
+
+================================================================================
+                        SKIPPED / EXCLUDED
+================================================================================
+
+  ForestDiffusion: Not included in this 6-generator mushroom sweep.
+  TabDDPM:         Dependencies not installed / excluded from phase-1 sweeps.
+
+================================================================================
+                        KEY OBSERVATIONS
+================================================================================
+
+  1. Winner by Acc objective: TVAE (0.6423).
+  2. Top fidelity: CTGAN (0.9480).
+  3. Best Acc utility: TVAE (0.9700).
+  4. Lowest privacy risk: CTGAN (0.6133).
+  5. Ranking uses Accuracy utility; F1-HPO objectives kept as reference only.
+
+================================================================================
+  Generated: 2026-09-04 | Framework: Optuna TPE | Dataset: mushroom | Generators: 6
+================================================================================

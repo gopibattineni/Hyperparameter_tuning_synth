@@ -1,0 +1,7 @@
+{
+  "dataset": "forest_cover",
+  "generator": "gaussian_copula",
+  "best_value": 0.48771603063565094,
+  "elapsed_sec": 79.42020222905558,
+  "status": "completed"
+}

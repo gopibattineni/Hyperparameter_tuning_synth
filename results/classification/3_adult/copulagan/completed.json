@@ -1,0 +1,7 @@
+{
+  "dataset": "adult",
+  "generator": "copulagan",
+  "best_value": 0.6399733481589072,
+  "elapsed_sec": 1249.6314358760137,
+  "status": "completed"
+}

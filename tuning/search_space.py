@@ -66,6 +66,30 @@ def suggest_from_yaml(
     return params
 
 
+def restore_optuna_params(params: Mapping[str, Any]) -> dict[str, Any]:
+    """Restore values Optuna stored as strings (list dims, YAML bools).
+
+    Nested list categoricals are suggested as ``'[256, 256]'`` labels so
+    Optuna can hash them. ``study.best_params`` therefore returns those
+    strings, not the lists used during trials.
+    """
+    restored: dict[str, Any] = {}
+    for name, value in params.items():
+        if isinstance(value, str):
+            stripped = value.strip()
+            if stripped in {"true", "True"}:
+                restored[name] = True
+                continue
+            if stripped in {"false", "False"}:
+                restored[name] = False
+                continue
+            if stripped.startswith("[") and stripped.endswith("]"):
+                restored[name] = eval(stripped, {"__builtins__": {}})  # noqa: S307
+                continue
+        restored[name] = value
+    return restored
+
+
 def defaults_from_yaml(cfg: Mapping[str, Any]) -> dict[str, Any]:
     """Return default hyperparameters from a generator config.
 

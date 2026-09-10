@@ -1,0 +1,7 @@
+{
+  "dataset": "mushroom",
+  "generator": "ctgan",
+  "best_value": 0.6337154429961699,
+  "elapsed_sec": 4567.767203971976,
+  "status": "completed"
+}

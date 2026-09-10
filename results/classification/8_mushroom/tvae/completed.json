@@ -1,0 +1,7 @@
+{
+  "dataset": "mushroom",
+  "generator": "tvae",
+  "best_value": 0.6501221276496444,
+  "elapsed_sec": 621.2966544299852,
+  "status": "completed"
+}

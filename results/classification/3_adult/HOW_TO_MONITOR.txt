@@ -1,0 +1,13 @@
+Adult × forest_diffusion — detached on patten (survives laptop sleep)
+
+PID file: forest_diffusion.pid
+Log:      forest_diffusion_run.log
+
+Check if still running:
+  ps -p $(cat results/classification/3_adult/forest_diffusion.pid) -o pid,etime,cmd
+
+Follow log:
+  tail -f results/classification/3_adult/forest_diffusion_run.log
+
+Done when this exists:
+  results/classification/3_adult/forest_diffusion/completed.json

@@ -1,0 +1,7 @@
+{
+  "dataset": "alzheimers",
+  "generator": "gaussian_copula",
+  "best_value": 0.5937711124539753,
+  "elapsed_sec": 19.221541384235024,
+  "status": "completed"
+}

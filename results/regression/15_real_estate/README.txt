@@ -1,0 +1,11 @@
+index=15
+dataset=real_estate
+folder=15_real_estate
+phase=phase2_regression
+task=regression
+target=Y house price of unit area
+max_samples=1000
+drop_columns=["X1 transaction date"]
+generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp
+n_trials=20
+launch=start_real_estate_6gen.sh (detached via setsid on patten)

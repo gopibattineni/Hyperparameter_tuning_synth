@@ -1,0 +1,15 @@
+{
+  "epochs": 700,
+  "batch_size": 500,
+  "embedding_dim": 256,
+  "compress_dims": [
+    64,
+    64
+  ],
+  "decompress_dims": [
+    64,
+    64
+  ],
+  "l2scale": 8.482859848614704e-05,
+  "loss_factor": 10
+}

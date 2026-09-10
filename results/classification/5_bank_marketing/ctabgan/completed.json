@@ -1,0 +1,7 @@
+{
+  "dataset": "bank_marketing",
+  "generator": "ctabgan",
+  "best_value": 0.5471426777584231,
+  "elapsed_sec": 2117.4689418908674,
+  "status": "completed"
+}

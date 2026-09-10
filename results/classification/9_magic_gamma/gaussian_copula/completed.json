@@ -1,0 +1,7 @@
+{
+  "dataset": "magic_gamma",
+  "generator": "gaussian_copula",
+  "best_value": 0.6299365234407833,
+  "elapsed_sec": 28.23697462095879,
+  "status": "completed"
+}

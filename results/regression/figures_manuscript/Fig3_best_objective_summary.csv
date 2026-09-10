@@ -1,0 +1,7 @@
+folder,key,display,generator,gen_key,best_value,best_trial
+10_metro_interstate,metro_interstate,Metro Interstate,TVAE,tvae,0.652519274879645,15
+11_online_shopping,online_shopping,Online Shopping,TVAE,tvae,0.623685610117338,19
+12_air_quality,air_quality,Air Quality,TVAE,tvae,0.6318900885633514,18
+13_concrete,concrete,Concrete,GaussianCopula,gaussian_copula,0.6199365640729244,10
+14_energy_efficiency,energy_efficiency,Energy Efficiency,CTGAN,ctgan,0.6219951885288841,13
+15_real_estate,real_estate,Real Estate,WGAN-GP,wgan_gp,0.6485462733108974,13

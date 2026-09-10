@@ -1,5 +1,18 @@
 """Dataset loader — YAML registry → fixed-seed train/test split.
 
+All datasets (classification and regression) pass through the same pipeline
+before generator training:
+
+  1. Load raw data (CSV / Excel / UCI)
+  2. Clean: drop columns, NA tokens, target/column maps
+  3. Optional balanced subsample (``max_samples`` / ``balance_classes``)
+  4. Stratified train/test split (fixed seed)
+  5. Train-fitted preprocessing (``datasets/preprocess.py``):
+     imputation → categorical label-encoding → optional numeric scaling
+
+Defaults live in ``config/datasets.yaml`` under ``defaults`` and apply to
+every dataset unless a per-dataset entry overrides them.
+
 Generators and Optuna trials must only ever call ``fit`` on ``train_df``.
 The hold-out ``test_df`` is reserved for utility evaluation (TSTR / TRTR).
 """
@@ -14,6 +27,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from config_utils import CONFIG_ROOT, REPO_ROOT, load_yaml
+from .preprocess import fit_transform_train_test
 from .schema import DatasetSpec
 
 __all__ = [
@@ -31,12 +45,24 @@ __all__ = [
 # ---------------------------------------------------------------------------
 
 def load_dataset_config(config_path: Path | str | None = None) -> dict[str, Any]:
-    """Load the datasets YAML and return the ``datasets`` mapping."""
+    """Load the datasets YAML and return the ``datasets`` mapping.
+
+    Top-level ``defaults`` (e.g. ``max_samples``, ``balance_classes``) are
+    merged into each dataset entry when the key is absent.
+    """
     path = Path(config_path) if config_path else CONFIG_ROOT / "datasets.yaml"
     raw = load_yaml(path)
+    defaults = dict(raw.get("defaults") or {})
     datasets = raw.get("datasets", raw)
     if not isinstance(datasets, dict):
         raise ValueError(f"Invalid datasets config in {path}")
+    if defaults:
+        merged: dict[str, Any] = {}
+        for key, cfg in datasets.items():
+            entry = dict(defaults)
+            entry.update(dict(cfg or {}))
+            merged[key] = entry
+        return merged
     return datasets
 
 
@@ -142,7 +168,12 @@ def _apply_preprocess(df: pd.DataFrame, cfg: Mapping[str, Any]) -> pd.DataFrame:
             mapped = out[col].map(mapping)
             out[col] = mapped.where(mapped.notna(), out[col])
 
-    if cfg.get("dropna", True):
+    impute = bool(cfg.get("impute", True))
+    if impute:
+        # Keep rows with missing features; impute after train/test split.
+        if target and target in out.columns:
+            out = out.dropna(subset=[target]).reset_index(drop=True)
+    elif cfg.get("dropna", True):
         out = out.dropna(axis=0).reset_index(drop=True)
 
     # Strip column name whitespace
@@ -150,14 +181,34 @@ def _apply_preprocess(df: pd.DataFrame, cfg: Mapping[str, Any]) -> pd.DataFrame:
     return out
 
 
+def _is_integer_like(series: pd.Series) -> bool:
+    """True if numeric values are whole numbers (int dtype or float ints)."""
+    if not pd.api.types.is_numeric_dtype(series):
+        return False
+    if pd.api.types.is_integer_dtype(series):
+        return True
+    non_null = series.dropna()
+    if len(non_null) == 0:
+        return False
+    vals = non_null.to_numpy(dtype=float)
+    return bool(np.allclose(vals, np.round(vals), equal_nan=False))
+
+
 def _infer_column_types(
     df: pd.DataFrame,
     target: str | None,
     cfg: Mapping[str, Any],
 ) -> tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
-    """Return (feature_columns, categorical_columns, numeric_columns)."""
+    """Return (feature_columns, categorical_columns, numeric_columns).
+
+    Discrete / categorical detection:
+      - non-numeric dtypes (object/string/category)
+      - integer-like columns with ``nunique ≤ max_int_categories`` (default 20)
+      - columns listed in YAML ``categorical_columns``
+    """
     forced_cat = set(cfg.get("categorical_columns") or [])
     forced_num = set(cfg.get("numeric_columns") or [])
+    max_card = int(cfg.get("max_int_categories", 20) or 0)
 
     feature_cols = [c for c in df.columns if c != target]
     categorical: list[str] = []
@@ -170,18 +221,82 @@ def _infer_column_types(
         if col in forced_num:
             numeric.append(col)
             continue
-        if pd.api.types.is_numeric_dtype(df[col]):
-            # Low-cardinality integers may still be categorical if configured
-            max_card = int(cfg.get("max_int_categories", 0) or 0)
-            nunique = int(df[col].nunique(dropna=True))
-            if max_card > 0 and nunique <= max_card:
-                categorical.append(col)
-            else:
-                numeric.append(col)
-        else:
+        s = df[col]
+        if not pd.api.types.is_numeric_dtype(s):
             categorical.append(col)
+            continue
+        nunique = int(s.nunique(dropna=True))
+        if max_card > 0 and _is_integer_like(s) and 1 < nunique <= max_card:
+            # Binary / ordinal / one-hot flags stored as ints (e.g. CDC diabetes)
+            categorical.append(col)
+        else:
+            numeric.append(col)
 
     return tuple(feature_cols), tuple(categorical), tuple(numeric)
+
+
+def _balanced_subsample(
+    df: pd.DataFrame,
+    *,
+    target: str | None,
+    task: str,
+    max_samples: int,
+    balance_classes: bool,
+    seed: int,
+) -> pd.DataFrame:
+    """Randomly subsample to at most ``max_samples`` rows.
+
+    For classification with ``balance_classes=True``, draw as evenly as
+    possible across target categories so every class gets the same quota
+    (``max_samples // n_classes``), capped by class size. Datasets smaller
+    than ``max_samples`` still get balanced down to that equal quota when
+    balancing is enabled.
+    """
+    if max_samples is None or int(max_samples) <= 0 or len(df) == 0:
+        return df.reset_index(drop=True)
+
+    rng_seed = int(seed)
+    max_samples = int(max_samples)
+    can_balance = (
+        bool(balance_classes)
+        and task == "classification"
+        and target is not None
+        and target in df.columns
+        and int(df[target].nunique(dropna=True)) >= 2
+    )
+
+    if not can_balance:
+        if len(df) <= max_samples:
+            return df.reset_index(drop=True)
+        return df.sample(n=max_samples, random_state=rng_seed).reset_index(drop=True)
+
+    classes = list(df[target].dropna().unique())
+    n_classes = len(classes)
+    per_class = max(1, max_samples // n_classes)
+
+    parts: list[pd.DataFrame] = []
+    used_index: list[Any] = []
+    for cls in classes:
+        subset = df.loc[df[target] == cls]
+        take = min(len(subset), per_class)
+        if take <= 0:
+            continue
+        drawn = subset.sample(n=take, random_state=rng_seed)
+        parts.append(drawn)
+        used_index.extend(drawn.index.tolist())
+
+    if not parts:
+        return df.reset_index(drop=True)
+
+    out = pd.concat(parts, axis=0)
+    deficit = max_samples - len(out)
+    if deficit > 0:
+        leftover = df.loc[~df.index.isin(used_index)]
+        if len(leftover) > 0:
+            extra = leftover.sample(n=min(deficit, len(leftover)), random_state=rng_seed)
+            out = pd.concat([out, extra], axis=0)
+
+    return out.sample(frac=1.0, random_state=rng_seed).reset_index(drop=True)
 
 
 def _build_spec(
@@ -265,6 +380,9 @@ def load_train_test(
 
     The split is deterministic given ``seed`` / ``test_size`` in YAML.
     Classification tasks use stratified splitting when every class has ≥2 rows.
+
+    Preprocessing (impute, encode categoricals, optional normalize) is always
+    applied here — there is no alternate data path for HPO experiments.
     """
     datasets = load_dataset_config(config_path)
     if dataset_key not in datasets:
@@ -283,7 +401,24 @@ def load_train_test(
     test_size = float(cfg.get("test_size", 0.2))
     seed = int(cfg.get("seed", 42))
     target = cfg.get("target")
-    task = cfg.get("task", "classification")
+    task = str(cfg.get("task", "classification"))
+
+    # Cap rows for compute cost: balanced across classes for classification
+    max_samples = cfg.get("max_samples", None)
+    if max_samples is not None:
+        df = _balanced_subsample(
+            df,
+            target=str(target) if target else None,
+            task=task,
+            max_samples=int(max_samples),
+            balance_classes=bool(cfg.get("balance_classes", True)),
+            seed=int(cfg.get("sample_seed", seed)),
+        )
+        if len(df) < 5:
+            raise ValueError(
+                f"Dataset {dataset_key!r} has only {len(df)} rows after "
+                f"max_samples={max_samples} balanced subsample."
+            )
 
     stratify = None
     if task == "classification" and target and target in df.columns:
@@ -301,7 +436,17 @@ def load_train_test(
     train_df = train_df.reset_index(drop=True)
     test_df = test_df.reset_index(drop=True)
 
+    # Infer schema on pre-transform data, then fit preprocess on train only.
     spec = _build_spec(dataset_key, cfg, df, n_train=len(train_df), n_test=len(test_df))
+    train_df, test_df = fit_transform_train_test(
+        train_df,
+        test_df,
+        categorical_columns=spec.categorical_columns,
+        numeric_columns=spec.numeric_columns,
+        target=spec.target,
+        task=spec.task,
+        cfg=cfg,
+    )
 
     if not return_frames:  # pragma: no cover
         return train_df, test_df, spec

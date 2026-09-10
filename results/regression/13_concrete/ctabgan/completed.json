@@ -1,0 +1,7 @@
+{
+  "dataset": "concrete",
+  "generator": "ctabgan",
+  "best_value": 0.573929304808494,
+  "elapsed_sec": 1661.7194695780054,
+  "status": "completed"
+}

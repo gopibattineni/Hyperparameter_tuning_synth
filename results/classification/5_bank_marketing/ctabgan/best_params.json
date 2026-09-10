@@ -1,0 +1,12 @@
+{
+  "epochs": 300,
+  "batch_size": 100,
+  "random_dim": 100,
+  "num_channels": 32,
+  "class_dim": [
+    512,
+    512,
+    512
+  ],
+  "l2scale": 2.932951267289443e-06
+}

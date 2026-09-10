@@ -1,0 +1,79 @@
+# ForestDiffusion — Jolicoeur-Martineau et al. (AISTATS 2024)
+# Official defaults (SamsungSAILMontreal/ForestDiffusion): n_t=50,
+# duplicate_K=100 (n_noise), diffusion_type='vp'. XGB depth/estimators matter.
+
+generator: forest_diffusion
+backend: ForestDiffusion
+references:
+  - "Jolicoeur-Martineau, A. et al. (2024). Generating and Imputing Tabular Data via Diffusion and Flow-based Gradient-Boosted Trees. AISTATS."
+  - "https://github.com/SamsungSAILMontreal/ForestDiffusion"
+
+defaults:
+  n_t: 50
+  duplicate_K: 100
+  diffusion_type: vp
+  max_depth: 7
+  n_estimators: 100
+  eta: 0.3
+
+search_space:
+  n_t:
+    type: int
+    suggest: int
+    low: 20
+    high: 100
+    step: 10
+    default: 50
+    explanation: >
+      Number of noise levels / sampling steps (default 50). Paper finds VP
+      diffusion needs many levels; increasing improves quality but slows
+      train/sample. Flow can work with fewer (tune with diffusion_type).
+
+  duplicate_K:
+    type: categorical
+    suggest: categorical
+    choices: [50, 75, 100, 150]
+    default: 100
+    explanation: >
+      Noise duplicates per real row (n_noise in the paper; default 100). Most
+      critical quality knob — approximates E_{x,z}; reduce to 50 only if memory
+      constrained.
+
+  diffusion_type:
+    type: categorical
+    suggest: categorical
+    choices: [vp, flow]
+    default: vp
+    explanation: >
+      'vp' = variance-preserving diffusion; 'flow' = flow-matching. Flow is
+      faster and can use smaller n_t; VP often stronger with larger n_t.
+
+  max_depth:
+    type: int
+    suggest: int
+    low: 3
+    high: 10
+    default: 7
+    explanation: >
+      XGBoost tree depth for the reverse-process regressors. Deeper trees
+      capture sharper conditionals; too deep overfits (privacy risk).
+
+  n_estimators:
+    type: categorical
+    suggest: categorical
+    choices: [50, 100, 200]
+    default: 100
+    explanation: >
+      Number of boosting rounds per forest. More trees → better score matching
+      / flow regression at higher compute cost.
+
+  eta:
+    type: float
+    suggest: float
+    low: 0.05
+    high: 0.5
+    log: true
+    default: 0.3
+    explanation: >
+      XGBoost learning rate (eta). Interacts with n_estimators; lower eta with
+      more trees often improves calibration of the reverse process.

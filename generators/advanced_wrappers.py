@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 
 from .base import BaseGenerator
+from .postprocess import discrete_levels_from_train, snap_discrete_columns
 from .registry import register
 
 
@@ -51,59 +52,93 @@ class CTABGANGenerator(BaseGenerator):
         self._columns = list(train_df.columns)
         target = getattr(metadata, "target", None)
         cat_cols = list(getattr(metadata, "categorical_columns", ()) or [])
-        # Heuristic: object columns are categorical
         for c in train_df.columns:
             if not pd.api.types.is_numeric_dtype(train_df[c]) and c not in cat_cols:
                 cat_cols.append(c)
         if target and target not in cat_cols and metadata.task == "classification":
             cat_cols.append(target)
 
-        # CTABGAN expects a CSV path in original API — write a temp frame
-        import tempfile
-        self._tmpdir = tempfile.TemporaryDirectory()
-        csv_path = Path(self._tmpdir.name) / "train.csv"
-        train_df.to_csv(csv_path, index=False)
-
         problem = {"Classification": target} if metadata.task == "classification" and target else \
                   {"Regression": target} if target else None
 
-        kwargs = {
-            "raw_csv_path": str(csv_path),
-            "test_ratio": 0.0,
-            "categorical_columns": cat_cols,
-            "log_columns": [],
-            "mixed_columns": {},
-            "general_columns": [],
-            "non_categorical_columns": [],
-            "integer_columns": [
-                c for c in train_df.columns
-                if pd.api.types.is_integer_dtype(train_df[c])
-            ],
-            "problem_type": problem or {"Classification": cat_cols[-1]},
-            "epochs": int(self.params.get("epochs", 150)),
-            "batch_size": int(self.params.get("batch_size", 500)),
-            "random_dim": int(self.params.get("random_dim", 100)),
-            "num_channels": int(self.params.get("num_channels", 64)),
-            "l2scale": float(self.params.get("l2scale", 1e-5)),
-        }
         class_dim = self.params.get("class_dim", [256, 256, 256, 256])
-        kwargs["class_dim"] = tuple(class_dim)
+        if isinstance(class_dim, str):
+            class_dim = eval(class_dim, {"__builtins__": {}})  # noqa: S307
 
-        self._model = CTABGAN(**kwargs)
+        self._model = CTABGAN(
+            df=train_df.reset_index(drop=True),
+            test_ratio=0.0,
+            categorical_columns=cat_cols,
+            log_columns=[],
+            mixed_columns={},
+            general_columns=[],
+            non_categorical_columns=[],
+            integer_columns=[
+                c for c in train_df.columns
+                if pd.api.types.is_integer_dtype(train_df[c]) and c not in cat_cols
+            ],
+            problem_type=problem or {},
+            epochs=int(self.params.get("epochs", 150)),
+            batch_size=int(self.params.get("batch_size", 500)),
+            random_dim=int(self.params.get("random_dim", 100)),
+            num_channels=int(self.params.get("num_channels", 64)),
+            l2scale=float(self.params.get("l2scale", 1e-5)),
+            class_dim=tuple(class_dim),
+        )
         self._model.fit()
         self.is_fitted = True
         return self
 
+    # Maximum seconds a single generate_samples() call may take before we
+    # give up and let Optuna prune the trial.  The vendor code already has a
+    # 600 s internal loop; we add a hard wall-clock cap on top so that even
+    # the wrapper-level retries cannot accumulate unbounded time.
+    _SAMPLE_TIMEOUT_S: float = 120.0
+    _MAX_RETRIES: int = 2
+
     def sample(self, n: int, seed: int | None = None) -> pd.DataFrame:
+        import time as _time
+
         if not self.is_fitted:
             raise RuntimeError("Call fit() before sample().")
-        out = self._model.generate_samples()
+        seed0 = 0 if seed is None else int(seed)
+        t0 = _time.monotonic()
+
+        out = self._model.generate_samples(num_samples=int(n), seed=seed0)
+
+        # Fast-fail: if the first call already blew the timeout or returned
+        # almost nothing, don't keep retrying — let Optuna prune.
+        elapsed = _time.monotonic() - t0
+        if elapsed > self._SAMPLE_TIMEOUT_S:
+            raise RuntimeError(
+                f"CTAB-GAN sampling timed out ({elapsed:.0f}s > "
+                f"{self._SAMPLE_TIMEOUT_S}s) — trial will be pruned."
+            )
+
         if len(out) < n:
-            # top-up by repeated generation
             parts = [out]
-            while sum(len(p) for p in parts) < n:
-                parts.append(self._model.generate_samples())
+            extra_seed = seed0
+            for _ in range(self._MAX_RETRIES):
+                if sum(len(p) for p in parts) >= n:
+                    break
+                if (_time.monotonic() - t0) > self._SAMPLE_TIMEOUT_S:
+                    break
+                extra_seed += 1
+                parts.append(
+                    self._model.generate_samples(num_samples=int(n), seed=extra_seed)
+                )
             out = pd.concat(parts, ignore_index=True)
+
+        if len(out) < 1:
+            raise RuntimeError(
+                "CTAB-GAN generate_samples returned an empty frame after "
+                f"{_time.monotonic() - t0:.0f}s — trial will be pruned."
+            )
+        if len(out) < n:
+            # Pad with repeated rows so downstream eval still runs
+            # (better than hanging; quality will be penalised naturally).
+            reps = int(np.ceil(n / len(out)))
+            out = pd.concat([out] * reps, ignore_index=True)
         out = out.iloc[:n].reset_index(drop=True)
         for c in self._columns:
             if c not in out.columns:
@@ -132,6 +167,9 @@ class WGANGPGenerator(BaseGenerator):
         import torch.nn as nn
 
         self._columns = list(train_df.columns)
+        self._discrete_levels = discrete_levels_from_train(train_df, metadata)
+        # Keep discrete/binary targets out of continuous GAN path when possible;
+        # still generate them continuously then snap in sample().
         num_df = train_df.select_dtypes(include=[np.number]).copy()
         self._num_cols = list(num_df.columns)
         self._cat_cols = [c for c in self._columns if c not in self._num_cols]
@@ -220,7 +258,8 @@ class WGANGPGenerator(BaseGenerator):
         # categorical columns: bootstrap from train
         base = self._train.sample(n=n, replace=True, random_state=seed).reset_index(drop=True)
         if not getattr(self, "_torch_mode", False):
-            return base[self._columns]
+            out = snap_discrete_columns(base[self._columns], getattr(self, "_discrete_levels", {}))
+            return out[self._columns]
 
         import torch
         with torch.no_grad():
@@ -231,6 +270,7 @@ class WGANGPGenerator(BaseGenerator):
         out = base.copy()
         for c in self._num_cols:
             out[c] = num[c].to_numpy()
+        out = snap_discrete_columns(out, getattr(self, "_discrete_levels", {}))
         return out[self._columns]
 
 
@@ -254,22 +294,22 @@ class ForestDiffusionGenerator(BaseGenerator):
         from ForestDiffusion import ForestDiffusionModel
 
         self._columns = list(train_df.columns)
+        self._discrete_levels = discrete_levels_from_train(train_df, metadata)
         target = getattr(metadata, "target", None)
         X = train_df.copy()
-        y = None
-        if target and target in X.columns and metadata.task == "classification":
-            y = X[target].to_numpy()
-            # ForestDiffusion often wants numeric X; label-encode objects
+        # ForestDiffusion often wants numeric X; label-encode objects
         for c in X.columns:
             if not pd.api.types.is_numeric_dtype(X[c]):
                 X[c] = pd.Categorical(X[c].astype(str)).codes
 
         self._X_cols = list(X.columns)
         arr = X.to_numpy(dtype=float)
-        cat_idx = [
-            i for i, c in enumerate(self._X_cols)
-            if c in getattr(metadata, "categorical_columns", ())
-        ]
+        cat_names = set(getattr(metadata, "categorical_columns", ()) or ())
+        if target and getattr(metadata, "task", None) == "classification":
+            cat_names.add(target)
+        # Also mark low-cardinality integer columns as categorical indexes
+        cat_names.update(self._discrete_levels.keys())
+        cat_idx = [i for i, c in enumerate(self._X_cols) if c in cat_names]
         kwargs = dict(
             n_t=int(self.params.get("n_t", 50)),
             duplicate_K=int(self.params.get("duplicate_K", 100)),
@@ -299,6 +339,7 @@ class ForestDiffusionGenerator(BaseGenerator):
         for c in self._columns:
             if c not in out.columns:
                 out[c] = pd.NA
+        out = snap_discrete_columns(out, getattr(self, "_discrete_levels", {}))
         return out[self._columns]
 
 

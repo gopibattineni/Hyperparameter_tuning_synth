@@ -1,0 +1,10 @@
+index=13
+dataset=concrete
+folder=13_concrete
+phase=phase2_regression
+task=regression
+target=Concrete compressive strength
+max_samples=1000
+generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp
+n_trials=20
+launch=start_concrete_6gen.sh (detached via setsid on patten)

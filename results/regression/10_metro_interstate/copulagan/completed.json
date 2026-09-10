@@ -1,0 +1,7 @@
+{
+  "dataset": "metro_interstate",
+  "generator": "copulagan",
+  "best_value": 0.6189599401374707,
+  "elapsed_sec": 470.014279067982,
+  "status": "completed"
+}

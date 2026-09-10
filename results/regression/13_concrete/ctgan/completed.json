@@ -1,0 +1,7 @@
+{
+  "dataset": "concrete",
+  "generator": "ctgan",
+  "best_value": 0.6147205854229565,
+  "elapsed_sec": 2999.118445514934,
+  "status": "completed"
+}

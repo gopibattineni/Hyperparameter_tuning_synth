@@ -1,0 +1,126 @@
+================================================================================
+      ENERGY EFFICIENCY — HYPERPARAMETER TUNING RESULTS (Notation File)
+================================================================================
+Dataset: Energy Efficiency
+Task: Regression (Y1)
+Tuning Framework: Optuna (TPE Sampler, MedianPruner)
+Trials per Generator: 20
+Sampling: max_samples=1000, seed=42 (random subsample for regression)
+Train/Test sizes after sampling+split: 800 / 200
+Preprocessing: impute (median/mode) + categorical label-encoding (train-fitted)
+Objective (report ranking): MAXIMIZE  0.4×Fidelity + 0.4×Utility(R²) − 0.2×PrivacyRisk
+
+SCOPE: COMPLETE with 6 generators
+  Included: GaussianCopula, CopulaGAN, CTGAN, TVAE, CTAB-GAN+, WGAN-GP
+  Excluded: ForestDiffusion, TabDDPM
+
+================================================================================
+                RESULTS RANKED BY R² OBJECTIVE (Best → Worst)
+================================================================================
+
+#1  GaussianCopula               Objective(R²): 0.6169
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9029    |  KS Sim: 0.8340   Corr Sim: 0.9718
+    Utility(R²):   1.0000    |  TSTR R²: -1.7531   TRTR R²: -1.8624
+    Privacy Risk:  0.7211    |  MIA AUC: 1.0000   NNDR: 0.9297
+    Time: 11s (0.2 min)
+    Reference HPO objective: 0.6169  |  Utility(HPO): 1.0000
+
+    Best Hyperparameters:
+      default_distribution= norm
+      enforce_min_max_values= False
+
+#2  TVAE                         Objective(R²): 0.6096
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9152    |  KS Sim: 0.8984   Corr Sim: 0.9320
+    Utility(R²):   1.0000    |  TSTR R²: -1.8327   TRTR R²: -1.8624
+    Privacy Risk:  0.7823    |  MIA AUC: 0.9986   NNDR: 0.7233
+    Time: 537s (8.9 min)
+    Reference HPO objective: 0.6100  |  Utility(HPO): 0.9825
+
+    Best Hyperparameters:
+      epochs              = 700
+      batch_size          = 100
+      embedding_dim       = 128
+      compress_dims       = [128, 128, 128]
+      decompress_dims     = [256, 256]
+      l2scale             = 2.2530356763988065e-05
+      loss_factor         = 5
+
+#3  CTGAN                        Objective(R²): 0.5709
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9286    |  KS Sim: 0.9202   Corr Sim: 0.9369
+    Utility(R²):   0.8714    |  TSTR R²: -1.9910   TRTR R²: -1.8624
+    Privacy Risk:  0.7456    |  MIA AUC: 1.0000   NNDR: 0.8479
+    Time: 1609s (26.8 min)
+    Reference HPO objective: 0.6220  |  Utility(HPO): 0.8955
+
+    Best Hyperparameters:
+      epochs              = 600
+      batch_size          = 200
+      generator_lr        = 9.901664132031761e-05
+      discriminator_lr    = 0.0004377049605284554
+      generator_dim       = [256, 256, 256]
+      discriminator_dim   = [512, 512]
+      discriminator_steps = 4
+      pac                 = 1
+
+#4  CTAB-GAN+                    Objective(R²): 0.5571
+    ─────────────────────────────────────────────────
+    Fidelity:      0.7554    |  KS Sim: 0.6926   Corr Sim: 0.8181
+    Utility(R²):   1.0000    |  TSTR R²: -1.8479   TRTR R²: -1.8624
+    Privacy Risk:  0.7250    |  MIA AUC: 1.0000   NNDR: 0.9167
+    Time: 1906s (31.8 min)
+    Reference HPO objective: 0.5682  |  Utility(HPO): 1.0000
+
+    Best Hyperparameters:
+      epochs              = 300
+      batch_size          = 500
+      l2scale             = 2.5420238250453333e-05
+      random_dim          = 100
+      num_channels        = 128
+      class_dim           = [512, 512, 512]
+
+#5  WGAN-GP                      Objective(R²): 0.4877
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8752    |  KS Sim: 0.8373   Corr Sim: 0.9131
+    Utility(R²):   0.7045    |  TSTR R²: -2.1579   TRTR R²: -1.8624
+    Privacy Risk:  0.7210    |  MIA AUC: 1.0000   NNDR: 0.9301
+    Time: 369s (6.2 min)
+    Reference HPO objective: 0.5977  |  Utility(HPO): 0.6689
+
+    Best Hyperparameters:
+      epochs              = 900
+      batch_size          = 64
+      latent_dim          = 128
+      hidden_dim          = 128
+      lr                  = 0.00013314588368132713
+      n_critic            = 9
+      lambda_gp           = 12.994723058775767
+
+#6  CopulaGAN                    Objective(R²): 0.2810
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8801    |  KS Sim: 0.8676   Corr Sim: 0.8925
+    Utility(R²):   0.1822    |  TSTR R²: -2.6802   TRTR R²: -1.8624
+    Privacy Risk:  0.7193    |  MIA AUC: 0.9995   NNDR: 0.9349
+    Time: 697s (11.6 min)
+    Reference HPO objective: 0.5977  |  Utility(HPO): 0.2028
+
+    Best Hyperparameters:
+      epochs              = 500
+      batch_size          = 100
+      generator_lr        = 0.0002368657480645031
+      discriminator_lr    = 8.273299061337369e-05
+      generator_dim       = [256, 256]
+      discriminator_dim   = [256, 256, 256]
+      discriminator_steps = 1
+      pac                 = 5
+      default_distribution= gamma
+
+================================================================================
+NOTES
+================================================================================
+  Utility uses Train-on-Synthetic-Test-on-Real (TSTR) R² vs TRTR R² gap.
+  Regressors in report: LinearRegression, RandomForest, DecisionTree.
+  ForestDiffusion / TabDDPM: Not included in this 6-generator sweep.
+  Generated: 2026-09-09 | Framework: Optuna TPE | Dataset: energy_efficiency | Generators: 6

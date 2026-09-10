@@ -1,0 +1,7 @@
+{
+  "dataset": "energy_efficiency",
+  "generator": "tvae",
+  "best_value": 0.6100317042101429,
+  "elapsed_sec": 536.9196630029473,
+  "status": "completed"
+}

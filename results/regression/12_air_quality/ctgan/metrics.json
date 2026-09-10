@@ -1,0 +1,20 @@
+{
+  "fidelity": 0.8828976920767408,
+  "ks_similarity": 0.8835576923076924,
+  "corr_similarity": 0.8822376918457892,
+  "sdv_quality": NaN,
+  "privacy_risk": 0.6919201944769163,
+  "mia_auc": 0.9563194444444445,
+  "nndr": 0.9541317591510198,
+  "dcr": 1.0721768758612795,
+  "nndr_norm": 0.9541317591510198,
+  "dcr_norm": 0.0,
+  "utility": 1.0,
+  "mean_f1_gap": -1.9210322321425881,
+  "mean_tstr_f1": -12.886996287322408,
+  "mean_trtr_f1": -14.808028519464996,
+  "objective": 0.6147750379353131,
+  "w_fidelity": 0.4,
+  "w_utility": 0.4,
+  "w_privacy_risk": 0.2
+}

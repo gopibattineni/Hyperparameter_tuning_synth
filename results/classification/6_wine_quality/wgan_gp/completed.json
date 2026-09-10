@@ -1,0 +1,7 @@
+{
+  "dataset": "wine_quality",
+  "generator": "wgan_gp",
+  "best_value": 0.6289022295016922,
+  "elapsed_sec": 766.472258369904,
+  "status": "completed"
+}

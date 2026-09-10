@@ -1,0 +1,7 @@
+{
+  "dataset": "concrete",
+  "generator": "gaussian_copula",
+  "best_value": 0.6199365640729244,
+  "elapsed_sec": 12.792880405904725,
+  "status": "completed"
+}

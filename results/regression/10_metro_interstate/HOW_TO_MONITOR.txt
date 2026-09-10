@@ -1,0 +1,25 @@
+Metro Interstate HPO — FULL 6-gen fair rerun WITHOUT date_time — detached on patten
+
+PID file: metro_interstate_6gen.pid
+Log:      metro_interstate_6gen_nodatetime_run.log
+
+Generators: gaussian_copula, copulagan, ctgan, tvae, ctabgan, wgan_gp
+Trials: 20 each | max_samples=1000 (train≈800, test≈200)
+Task: regression (target=traffic_volume) | Utility: R² TSTR/TRTR
+Dropped: date_time (high cardinality broke CTAB-GAN; all gens rerun for fairness)
+Preprocessing: impute + encode_categorical (global defaults)
+
+Check:
+  ps -p $(cat results/regression/10_metro_interstate/metro_interstate_6gen.pid) -o pid,etime,pcpu,cmd
+
+Follow:
+  tail -f results/regression/10_metro_interstate/metro_interstate_6gen_nodatetime_run.log
+
+Done when all completed.json exist under:
+  results/regression/10_metro_interstate/{generator}/
+
+Reports (auto-written after sweep):
+  metro_interstate_HPO_results.xlsx
+  metro_interstate_HPO_notation.txt
+
+Safe to lock PC — process parent is systemd. Keep patten powered on.

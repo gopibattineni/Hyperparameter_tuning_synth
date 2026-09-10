@@ -1,0 +1,7 @@
+{
+  "dataset": "forest_cover",
+  "generator": "tvae",
+  "best_value": 0.649227469917693,
+  "elapsed_sec": 1194.599266464007,
+  "status": "completed"
+}

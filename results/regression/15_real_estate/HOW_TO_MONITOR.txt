@@ -1,0 +1,25 @@
+Real Estate HPO — 6 generators, 1000 samples (regression) — detached on patten
+
+PID file: real_estate_6gen.pid
+Log:      real_estate_6gen_run.log
+
+Generators: gaussian_copula, copulagan, ctgan, tvae, ctabgan, wgan_gp
+Trials: 20 each | full set ≈414 → train≈331, test≈83
+Task: regression (target=Y house price of unit area) | Utility: R² TSTR/TRTR
+Dropped: X1 transaction date
+Preprocessing: impute + encode_categorical (global defaults)
+
+Check:
+  ps -p $(cat results/regression/15_real_estate/real_estate_6gen.pid) -o pid,etime,pcpu,cmd
+
+Follow:
+  tail -f results/regression/15_real_estate/real_estate_6gen_run.log
+
+Done when all completed.json exist under:
+  results/regression/15_real_estate/{generator}/
+
+Reports (auto-written after sweep):
+  real_estate_HPO_results.xlsx
+  real_estate_HPO_notation.txt
+
+Safe to lock PC — process parent is systemd. Keep patten powered on.

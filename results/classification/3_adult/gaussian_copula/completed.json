@@ -1,0 +1,7 @@
+{
+  "dataset": "adult",
+  "generator": "gaussian_copula",
+  "best_value": 0.5640263055661681,
+  "elapsed_sec": 24.67353859002469,
+  "status": "completed"
+}

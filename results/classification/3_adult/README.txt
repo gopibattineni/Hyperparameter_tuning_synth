@@ -1,0 +1,11 @@
+index=3
+dataset=adult
+folder=3_adult
+phase=phase1_classification
+status=COMPLETE (6 generators)
+generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp
+excluded=forest_diffusion,tabddpm
+max_samples=1000 (balanced)
+best_generator=copulagan
+best_objective_acc=0.6255
+reports=adult_HPO_results.xlsx, adult_HPO_notation.txt

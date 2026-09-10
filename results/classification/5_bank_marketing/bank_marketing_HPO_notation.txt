@@ -1,0 +1,139 @@
+================================================================================
+      BANK MARKETING — HYPERPARAMETER TUNING RESULTS (Notation File)
+================================================================================
+Dataset: Bank Marketing (bank-full.csv)
+Task: Binary Classification (y = yes/no term deposit subscription)
+Tuning Framework: Optuna (TPE Sampler, MedianPruner)
+Trials per Generator: 20
+Sampling: max_samples=1000, balance_classes=true, seed=42
+Train/Test sizes after sampling+split: 800 / 200
+Objective (report ranking): MAXIMIZE  0.4×Fidelity + 0.4×Utility(Accuracy) − 0.2×PrivacyRisk
+Note: Optuna search itself used F1-based utility; Acc utility recomputed for this report.
+
+SCOPE: COMPLETE with 6 generators
+  Included: GaussianCopula, CopulaGAN, CTGAN, TVAE, CTAB-GAN+, WGAN-GP
+  Excluded: ForestDiffusion, TabDDPM (same phase-1 sweep policy as adult)
+
+================================================================================
+                RESULTS RANKED BY ACCURACY OBJECTIVE (Best → Worst)
+================================================================================
+
+#1  TVAE                         Objective(Acc): 0.6294
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9176    |  KS Sim: 0.8880   Corr Sim: 0.9472
+    Utility(Acc):  0.9483    |  TSTR Acc: 0.7750   TRTR Acc: 0.8267
+    Privacy Risk:  0.5849    |  MIA AUC: 0.7189   NNDR: 0.9153
+    Time: 733s (12.2 min)
+    Reference F1-HPO objective: 0.6497  |  Utility(F1): 0.9443
+
+    Best Hyperparameters:
+      epochs              = 600
+      batch_size          = 100
+      embedding_dim       = 128
+      compress_dims       = [128, 128, 128]
+      decompress_dims     = [256, 256]
+      l2scale             = 0.0009670505629097786
+      loss_factor         = 5
+
+#2  CTGAN                        Objective(Acc): 0.6261
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9365    |  KS Sim: 0.9138   Corr Sim: 0.9593
+    Utility(Acc):  0.9250    |  TSTR Acc: 0.7517   TRTR Acc: 0.8267
+    Privacy Risk:  0.5925    |  MIA AUC: 0.7493   NNDR: 0.9405
+    Time: 3192s (53.2 min)
+    Reference F1-HPO objective: 0.6323  |  Utility(F1): 0.9352
+
+    Best Hyperparameters:
+      epochs              = 350
+      batch_size          = 100
+      generator_lr        = 8.168455894760161e-05
+      discriminator_lr    = 0.00037183641805732076
+      generator_dim       = [256, 256, 256]
+      discriminator_dim   = [512, 512]
+      discriminator_steps = 5
+      pac                 = 1
+
+#3  GaussianCopula               Objective(Acc): 0.5584
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8781    |  KS Sim: 0.7811   Corr Sim: 0.9751
+    Utility(Acc):  0.8667    |  TSTR Acc: 0.6933   TRTR Acc: 0.8267
+    Privacy Risk:  0.6973    |  MIA AUC: 0.9698   NNDR: 0.9587
+    Time: 23s (0.4 min)
+    Reference F1-HPO objective: 0.5593  |  Utility(F1): 0.8687
+
+    Best Hyperparameters:
+      default_distribution= norm
+      enforce_min_max_values= True
+
+#4  CopulaGAN                    Objective(Acc): 0.5503
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8384    |  KS Sim: 0.7368   Corr Sim: 0.9400
+    Utility(Acc):  0.8933    |  TSTR Acc: 0.7200   TRTR Acc: 0.8267
+    Privacy Risk:  0.7120    |  MIA AUC: 0.9887   NNDR: 0.9410
+    Time: 1054s (17.6 min)
+    Reference F1-HPO objective: 0.5538  |  Utility(F1): 0.9438
+
+    Best Hyperparameters:
+      epochs              = 700
+      batch_size          = 200
+      generator_lr        = 0.0003368951740328578
+      discriminator_lr    = 0.00032333012248028046
+      generator_dim       = [256, 256]
+      discriminator_dim   = [128, 128]
+      discriminator_steps = 1
+      pac                 = 5
+      default_distribution= beta
+
+#5  WGAN-GP                      Objective(Acc): 0.5418
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8993    |  KS Sim: 0.8443   Corr Sim: 0.9543
+    Utility(Acc):  0.8150    |  TSTR Acc: 0.6417   TRTR Acc: 0.8267
+    Privacy Risk:  0.7198    |  MIA AUC: 0.9964   NNDR: 0.9281
+    Time: 765s (12.8 min)
+    Reference F1-HPO objective: 0.5329  |  Utility(F1): 0.7985
+
+    Best Hyperparameters:
+      epochs              = 1900
+      batch_size          = 64
+      latent_dim          = 128
+      hidden_dim          = 256
+      lr                  = 0.0001301985807459117
+      n_critic            = 7
+      lambda_gp           = 1.2504050732375465
+
+#6  CTAB-GAN+                    Objective(Acc): 0.4593
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8145    |  KS Sim: 0.6966   Corr Sim: 0.9324
+    Utility(Acc):  0.6883    |  TSTR Acc: 0.5150   TRTR Acc: 0.8267
+    Privacy Risk:  0.7092    |  MIA AUC: 0.9954   NNDR: 0.9616
+    Time: 2117s (35.3 min)
+    Reference F1-HPO objective: 0.5471  |  Utility(F1): 0.7019
+
+    Best Hyperparameters:
+      epochs              = 300
+      batch_size          = 100
+      random_dim          = 100
+      num_channels        = 32
+      class_dim           = [512, 512, 512]
+      l2scale             = 2.932951267289443e-06
+
+================================================================================
+                        SKIPPED / EXCLUDED
+================================================================================
+
+  ForestDiffusion: Not included in this 6-generator bank_marketing sweep.
+  TabDDPM:         Dependencies not installed / excluded from phase-1 sweeps.
+
+================================================================================
+                        KEY OBSERVATIONS
+================================================================================
+
+  1. Winner by Acc objective: TVAE (0.6294).
+  2. Top fidelity: CTGAN (0.9365).
+  3. Best Acc utility: TVAE (0.9483).
+  4. Lowest privacy risk: TVAE (0.5849).
+  5. Ranking uses Accuracy utility; F1-HPO objectives kept as reference only.
+
+================================================================================
+  Generated: 2026-09-02 | Framework: Optuna TPE | Dataset: bank_marketing | Generators: 6
+================================================================================

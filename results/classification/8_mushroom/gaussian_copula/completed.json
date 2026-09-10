@@ -1,0 +1,7 @@
+{
+  "dataset": "mushroom",
+  "generator": "gaussian_copula",
+  "best_value": 0.5363557703934286,
+  "elapsed_sec": 31.59008542308584,
+  "status": "completed"
+}

@@ -1,0 +1,139 @@
+================================================================================
+      ADULT CENSUS — HYPERPARAMETER TUNING RESULTS (Notation File)
+================================================================================
+Dataset: Adult Census Income
+Task: Binary Classification (income <=50K / >50K)
+Tuning Framework: Optuna (TPE Sampler, MedianPruner)
+Trials per Generator: 20
+Sampling: max_samples=1000, balance_classes=true, seed=42
+Train/Test sizes after sampling+split: 800 / 200
+Objective (report ranking): MAXIMIZE  0.4×Fidelity + 0.4×Utility(Accuracy) − 0.2×PrivacyRisk
+Note: Optuna search itself used F1-based utility; Acc utility recomputed for this report.
+
+SCOPE: Treated as COMPLETE with 6 generators
+  Included: GaussianCopula, CopulaGAN, CTGAN, TVAE, CTAB-GAN+, WGAN-GP
+  Excluded: ForestDiffusion (stopped incomplete), TabDDPM (deps missing)
+
+================================================================================
+                RESULTS RANKED BY ACCURACY OBJECTIVE (Best → Worst)
+================================================================================
+
+#1  CopulaGAN                    Objective(Acc): 0.6255
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9172    |  KS Sim: 0.9012   Corr Sim: 0.9331
+    Utility(Acc):  0.9467    |  TSTR Acc: 0.7850   TRTR Acc: 0.8383
+    Privacy Risk:  0.6002    |  MIA AUC: 0.7718   NNDR: 0.9522
+    Time: 1250s (20.8 min)
+    Reference F1-HPO objective: 0.6212  |  Utility(F1): 0.9359
+
+    Best Hyperparameters:
+      epochs              = 700
+      batch_size          = 200
+      generator_lr        = 0.000236866
+      discriminator_lr    = 0.000522271
+      generator_dim       = [128, 128]
+      discriminator_dim   = [128, 128]
+      discriminator_steps = 1
+      pac                 = 5
+      default_distribution= gamma
+
+#2  TVAE                         Objective(Acc): 0.6138
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9127    |  KS Sim: 0.8764   Corr Sim: 0.9489
+    Utility(Acc):  0.9500    |  TSTR Acc: 0.7883   TRTR Acc: 0.8383
+    Privacy Risk:  0.6562    |  MIA AUC: 0.8558   NNDR: 0.9057
+    Time: 417s (7.0 min)
+    Reference F1-HPO objective: 0.6082  |  Utility(F1): 0.9360
+
+    Best Hyperparameters:
+      epochs              = 650
+      batch_size          = 200
+      embedding_dim       = 64
+      compress_dims       = [128, 128]
+      decompress_dims     = [256, 256]
+      l2scale             = 0.000528438
+      loss_factor         = 10
+
+#3  CTGAN                        Objective(Acc): 0.5869
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8877    |  KS Sim: 0.8218   Corr Sim: 0.9537
+    Utility(Acc):  0.9133    |  TSTR Acc: 0.7517   TRTR Acc: 0.8383
+    Privacy Risk:  0.6677    |  MIA AUC: 0.9004   NNDR: 0.9417
+    Time: 2698s (45.0 min)
+    Reference F1-HPO objective: 0.5755  |  Utility(F1): 0.8848
+
+    Best Hyperparameters:
+      epochs              = 1000
+      batch_size          = 200
+      generator_lr        = 5.46333e-05
+      discriminator_lr    = 0.000144031
+      generator_dim       = [256, 256, 256]
+      discriminator_dim   = [512, 512]
+      discriminator_steps = 3
+      pac                 = 1
+
+#4  GaussianCopula               Objective(Acc): 0.5667
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8414    |  KS Sim: 0.7338   Corr Sim: 0.9490
+    Utility(Acc):  0.9317    |  TSTR Acc: 0.7700   TRTR Acc: 0.8383
+    Privacy Risk:  0.7124    |  MIA AUC: 0.9990   NNDR: 0.9569
+    Time: 25s (0.4 min)
+    Reference F1-HPO objective: 0.5640  |  Utility(F1): 0.9249
+
+    Best Hyperparameters:
+      default_distribution= gamma
+      enforce_min_max_values= True
+
+#5  WGAN-GP                      Objective(Acc): 0.5432
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8786    |  KS Sim: 0.7986   Corr Sim: 0.9586
+    Utility(Acc):  0.8383    |  TSTR Acc: 0.6767   TRTR Acc: 0.8383
+    Privacy Risk:  0.7176    |  MIA AUC: 0.9999   NNDR: 0.9412
+    Time: 492s (8.2 min)
+    Reference F1-HPO objective: 0.5194  |  Utility(F1): 0.7788
+
+    Best Hyperparameters:
+      epochs              = 1700
+      batch_size          = 128
+      latent_dim          = 32
+      hidden_dim          = 256
+      lr                  = 0.000114662
+      n_critic            = 8
+      lambda_gp           = 1.5894651519828935
+
+#6  CTAB-GAN+                    Objective(Acc): 0.4998
+    ─────────────────────────────────────────────────
+    Fidelity:      0.7148    |  KS Sim: 0.5158   Corr Sim: 0.9139
+    Utility(Acc):  0.8950    |  TSTR Acc: 0.7333   TRTR Acc: 0.8383
+    Privacy Risk:  0.7207    |  MIA AUC: 0.9999   NNDR: 0.9306
+    Time: 2470s (41.2 min)
+    Reference F1-HPO objective: 0.4976  |  Utility(F1): 0.8895
+
+    Best Hyperparameters:
+      epochs              = 275
+      batch_size          = 500
+      random_dim          = 100
+      num_channels        = 128
+      class_dim           = [128, 128, 128]
+      l2scale             = 5.11382e-05
+
+================================================================================
+                        SKIPPED / EXCLUDED
+================================================================================
+
+  ForestDiffusion: Run stopped before completion; excluded from adult summary.
+  TabDDPM:         Dependencies not installed (libzero / rtdl).
+
+================================================================================
+                        KEY OBSERVATIONS
+================================================================================
+
+  1. Winner by Acc objective: CopulaGAN (0.6255).
+  2. Top fidelity: CopulaGAN (0.9172).
+  3. Best Acc utility: TVAE (0.9500).
+  4. Lowest privacy risk: CopulaGAN (0.6002).
+  5. Ranking uses Accuracy utility; F1-HPO objectives kept as reference only.
+
+================================================================================
+  Generated: 2026-08-26 | Framework: Optuna TPE | Dataset: adult | Generators: 6
+================================================================================

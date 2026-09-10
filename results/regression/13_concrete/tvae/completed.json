@@ -1,0 +1,7 @@
+{
+  "dataset": "concrete",
+  "generator": "tvae",
+  "best_value": 0.6104440437833495,
+  "elapsed_sec": 518.191190960817,
+  "status": "completed"
+}

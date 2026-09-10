@@ -1,0 +1,77 @@
+{
+  "copulagan": {
+    "mean_tstr_accuracy": 0.9357,
+    "mean_trtr_accuracy": 0.9561,
+    "accuracy_gap": 0.0205,
+    "per_clf_tstr_accuracy": {
+      "logistic_regression": 0.9561,
+      "random_forest": 0.9211,
+      "decision_tree": 0.9298
+    },
+    "per_clf_trtr_accuracy": {
+      "logistic_regression": 0.9649,
+      "random_forest": 0.9737,
+      "decision_tree": 0.9298
+    }
+  },
+  "ctabgan": {
+    "mean_tstr_accuracy": 0.8392,
+    "mean_trtr_accuracy": 0.9561,
+    "accuracy_gap": 0.117,
+    "per_clf_tstr_accuracy": {
+      "logistic_regression": 0.8684,
+      "random_forest": 0.9649,
+      "decision_tree": 0.6842
+    },
+    "per_clf_trtr_accuracy": {
+      "logistic_regression": 0.9649,
+      "random_forest": 0.9737,
+      "decision_tree": 0.9298
+    }
+  },
+  "ctgan": {
+    "mean_tstr_accuracy": 0.962,
+    "mean_trtr_accuracy": 0.9561,
+    "accuracy_gap": -0.0058,
+    "per_clf_tstr_accuracy": {
+      "logistic_regression": 0.9561,
+      "random_forest": 0.9825,
+      "decision_tree": 0.9474
+    },
+    "per_clf_trtr_accuracy": {
+      "logistic_regression": 0.9649,
+      "random_forest": 0.9737,
+      "decision_tree": 0.9298
+    }
+  },
+  "gaussian_copula": {
+    "mean_tstr_accuracy": 0.7719,
+    "mean_trtr_accuracy": 0.9561,
+    "accuracy_gap": 0.1842,
+    "per_clf_tstr_accuracy": {
+      "logistic_regression": 0.7982,
+      "random_forest": 0.8158,
+      "decision_tree": 0.7018
+    },
+    "per_clf_trtr_accuracy": {
+      "logistic_regression": 0.9649,
+      "random_forest": 0.9737,
+      "decision_tree": 0.9298
+    }
+  },
+  "tvae": {
+    "mean_tstr_accuracy": 0.9415,
+    "mean_trtr_accuracy": 0.9561,
+    "accuracy_gap": 0.0146,
+    "per_clf_tstr_accuracy": {
+      "logistic_regression": 0.9649,
+      "random_forest": 0.9386,
+      "decision_tree": 0.9211
+    },
+    "per_clf_trtr_accuracy": {
+      "logistic_regression": 0.9649,
+      "random_forest": 0.9737,
+      "decision_tree": 0.9298
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "dataset": "wine_quality",
+  "generator": "ctgan",
+  "best_value": 0.6329122396140623,
+  "elapsed_sec": 1941.38618563395,
+  "status": "completed"
+}

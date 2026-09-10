@@ -1,0 +1,11 @@
+index=12
+dataset=air_quality
+folder=12_air_quality
+phase=phase2_regression
+task=regression
+target=AH
+max_samples=1000
+drop_columns=[Date, Time]
+generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp
+n_trials=20
+launch=start_air_quality_6gen.sh (detached via setsid on patten)

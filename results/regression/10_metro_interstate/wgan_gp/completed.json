@@ -1,0 +1,7 @@
+{
+  "dataset": "metro_interstate",
+  "generator": "wgan_gp",
+  "best_value": 0.6013200600454316,
+  "elapsed_sec": 507.6551852109842,
+  "status": "completed"
+}

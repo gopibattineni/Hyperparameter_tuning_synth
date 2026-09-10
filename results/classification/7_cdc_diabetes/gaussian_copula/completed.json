@@ -1,0 +1,7 @@
+{
+  "dataset": "cdc_diabetes",
+  "generator": "gaussian_copula",
+  "best_value": 0.6267177921355539,
+  "elapsed_sec": 31.190155571093783,
+  "status": "completed"
+}

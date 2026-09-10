@@ -1,0 +1,7 @@
+{
+  "dataset": "alzheimers",
+  "generator": "forest_diffusion",
+  "best_value": 0.23789366831740238,
+  "elapsed_sec": 2185.2297901219863,
+  "status": "completed"
+}

@@ -1,5 +1,30 @@
 # Dataset registry — 15 SYNTH_BENCHMARK datasets.
 # Paths relative to repo root; UCI entries need `ucimlrepo`.
+#
+# Global sampling (applied in datasets/loader.py unless overridden per dataset):
+#   max_samples:       randomly keep at most this many rows (after preprocess)
+#   balance_classes:   for classification, sample equally across target classes
+#   impute:            median/mode imputation (train-fit) before generator training
+#   encode_categorical: label-encode categoricals / discrete cols to integer codes
+#   max_int_categories: treat integer-like cols with ≤N unique values as discrete/categorical
+#   normalize_numeric: optional StandardScaler on continuous numeric features (default off)
+#
+# Phase 1 — first 9 classification datasets:
+#   cancer, alzheimers, adult, forest_cover, bank_marketing,
+#   wine_quality, cdc_diabetes, mushroom, magic_gamma
+# Phase 2 — remaining 6 regression datasets (later):
+#   metro_interstate, online_shopping, air_quality,
+#   concrete, energy_efficiency, real_estate
+
+defaults:
+  max_samples: 1000
+  balance_classes: true
+  sample_seed: 42
+  # Preprocessing before generator training (fit on train, apply to test):
+  impute: true              # median (numeric) / mode (categorical); replaces row dropna
+  encode_categorical: true  # label-encode categoricals + discrete cols to 0..K-1 codes
+  max_int_categories: 20    # integer-like columns with ≤20 unique values → discrete/categorical
+  normalize_numeric: false  # optional StandardScaler on continuous numeric features (generators vary)
 
 datasets:
   cancer:
@@ -108,16 +133,23 @@ datasets:
     target: traffic_volume
     test_size: 0.2
     seed: 42
+    # High-cardinality timestamp (~1 unique per row) breaks CTAB-GAN's 32×32 layout.
+    drop_columns: [date_time]
 
   online_shopping:
     display_name: "11. Online Shopping"
     source: csv
     path: Datasets/e-shop.csv
     sep: ";"
-    task: classification
+    task: regression
     target: "price 2"
     test_size: 0.2
     seed: 42
+    # session ID: near-unique ID. page 2: ~188 clothing SKUs — high card breaks CTAB-GAN sampling.
+    drop_columns: ["session ID", "page 2 (clothing model)"]
+    # day (31) / order (57) as continuous cause CTAB-GAN rejection-sampling hangs.
+    max_int_categories: 60
+    categorical_columns: ["year", "day", "order"]
 
   air_quality:
     display_name: "12. Air Quality"
@@ -127,13 +159,15 @@ datasets:
     target: AH
     test_size: 0.2
     seed: 42
+    # Date/Time are high-cardinality / non-generative for tabular synth (esp. CTAB-GAN).
+    drop_columns: [Date, Time]
 
   concrete:
     display_name: "13. Concrete"
     source: uci
     uci_id: 165
     task: regression
-    target: Concrete_compressive_strength
+    target: Concrete compressive strength
     test_size: 0.2
     seed: 42
 
@@ -151,6 +185,8 @@ datasets:
     source: uci
     uci_id: 477
     task: regression
-    target: Y_house_price_of_unit_area
+    target: "Y house price of unit area"
     test_size: 0.2
     seed: 42
+    # Transaction date is near-continuous / high-card for synth; drop like other date fields.
+    drop_columns: ["X1 transaction date"]

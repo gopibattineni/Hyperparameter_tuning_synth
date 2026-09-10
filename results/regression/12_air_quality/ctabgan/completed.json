@@ -1,0 +1,7 @@
+{
+  "dataset": "air_quality",
+  "generator": "ctabgan",
+  "best_value": 0.5570450910629234,
+  "elapsed_sec": 1592.0700931590982,
+  "status": "completed"
+}

@@ -1,0 +1,7 @@
+{
+  "dataset": "magic_gamma",
+  "generator": "copulagan",
+  "best_value": 0.5402861422047163,
+  "elapsed_sec": 817.3556624939665,
+  "status": "completed"
+}

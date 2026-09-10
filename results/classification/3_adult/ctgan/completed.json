@@ -1,0 +1,7 @@
+{
+  "dataset": "adult",
+  "generator": "ctgan",
+  "best_value": 0.6088913168782932,
+  "elapsed_sec": 2697.655246170005,
+  "status": "completed"
+}

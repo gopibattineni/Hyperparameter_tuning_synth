@@ -77,7 +77,7 @@ def run_study(
     from config_utils import PACKAGE_ROOT
 
     root = Path(results_root) if results_root else PACKAGE_ROOT / "results"
-    out = run_dir(root, dataset_key, generator_name)
+    out = run_dir(root, dataset_key, generator_name, task=getattr(metadata, "task", None))
     out.mkdir(parents=True, exist_ok=True)
 
     n_trials = int(n_trials if n_trials is not None else optuna_cfg.get("n_trials", 50))
@@ -111,10 +111,10 @@ def run_study(
         # Retrain best params and export final synthetic + metrics
         best_params = dict(study.best_params)
         # Merge with defaults for params not in search space
-        from .search_space import defaults_from_yaml
+        from .search_space import defaults_from_yaml, restore_optuna_params
 
         full_params = defaults_from_yaml(gen_cfg)
-        full_params.update(best_params)
+        full_params.update(restore_optuna_params(best_params))
 
         best_gen = cls.from_params(full_params)
         best_gen.fit(train_df, metadata)

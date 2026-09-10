@@ -1,0 +1,53 @@
+# Objective configuration for Optuna trials.
+#
+# Formula (maximize):
+#   Objective = 0.4 × Fidelity + 0.4 × Utility − 0.2 × PrivacyRisk
+# All three components are normalized to [0, 1] inside the evaluators /
+# compute_objective layer.
+
+mode: weighted_sum          # weighted_sum | nsga2
+direction: maximize
+
+weights:
+  fidelity: 0.40
+  utility: 0.40
+  privacy_risk: 0.20        # subtracted in the objective
+
+normalize: clip01           # per-trial clip to [0,1] after metric aggregation
+
+nsga2:
+  objectives:
+    - name: fidelity
+      direction: maximize
+    - name: utility
+      direction: maximize
+    - name: privacy_risk
+      direction: minimize
+  sampler: NSGAIISampler
+  population_size: 50
+
+fidelity:
+  primary: fidelity
+  extras:
+    - ks_similarity
+    - corr_similarity
+
+utility:
+  # Mean F1 gap (TRTR − TSTR); converted to utility = 1 − clip(gap, 0, 1)
+  primary: mean_f1_gap
+  invert: true
+  # Fast subset for HPO; expand for final reporting if desired
+  classifiers:
+    - logistic_regression
+    - random_forest
+    - decision_tree
+
+privacy:
+  # Weighted mix → privacy_risk (higher = worse)
+  metrics:
+    mia_auc:
+      weight: 0.50
+    nndr:
+      weight: 0.30
+    dcr:
+      weight: 0.20

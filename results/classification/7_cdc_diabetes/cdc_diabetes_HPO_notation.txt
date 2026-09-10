@@ -1,0 +1,140 @@
+================================================================================
+      CDC DIABETES — HYPERPARAMETER TUNING RESULTS (Notation File)
+================================================================================
+Dataset: CDC Diabetes Health Indicators (UCI 891)
+Task: Binary Classification (Diabetes_binary)
+Tuning Framework: Optuna (TPE Sampler, MedianPruner)
+Trials per Generator: 20
+Sampling: max_samples=1000, balance_classes=true, seed=42
+Train/Test sizes after sampling+split: 800 / 200
+Preprocessing: impute (median/mode) + categorical label-encoding (train-fitted)
+Objective (report ranking): MAXIMIZE  0.4×Fidelity + 0.4×Utility(Accuracy) − 0.2×PrivacyRisk
+Note: Optuna search itself used F1-based utility; Acc utility recomputed for this report.
+
+SCOPE: COMPLETE with 6 generators
+  Included: GaussianCopula, CopulaGAN, CTGAN, TVAE, CTAB-GAN+, WGAN-GP
+  Excluded: ForestDiffusion, TabDDPM
+
+================================================================================
+                RESULTS RANKED BY ACCURACY OBJECTIVE (Best → Worst)
+================================================================================
+
+#1  TVAE                         Objective(Acc): 0.6443
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9586    |  KS Sim: 0.9653   Corr Sim: 0.9519
+    Utility(Acc):  0.9400    |  TSTR Acc: 0.6900   TRTR Acc: 0.7500
+    Privacy Risk:  0.5758    |  MIA AUC: 0.6735   NNDR: 0.8700
+    Time: 750s (12.5 min)
+    Reference F1-HPO objective: 0.6712  |  Utility(F1): 0.9858
+
+    Best Hyperparameters:
+      epochs              = 1000
+      batch_size          = 100
+      embedding_dim       = 32
+      compress_dims       = [128, 128, 128]
+      decompress_dims     = [256, 256]
+      l2scale             = 2.212018910831392e-05
+      loss_factor         = 10
+
+#2  CTGAN                        Objective(Acc): 0.6424
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9675    |  KS Sim: 0.9704   Corr Sim: 0.9645
+    Utility(Acc):  0.9050    |  TSTR Acc: 0.6550   TRTR Acc: 0.7500
+    Privacy Risk:  0.5330    |  MIA AUC: 0.6105   NNDR: 0.9076
+    Time: 3689s (61.5 min)
+    Reference F1-HPO objective: 0.6815  |  Utility(F1): 0.9817
+
+    Best Hyperparameters:
+      epochs              = 350
+      batch_size          = 100
+      generator_lr        = 8.168455894760161e-05
+      discriminator_lr    = 0.00037183641805732076
+      generator_dim       = [256, 256, 256]
+      discriminator_dim   = [512, 512]
+      discriminator_steps = 5
+      pac                 = 1
+
+#3  CopulaGAN                    Objective(Acc): 0.6175
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9565    |  KS Sim: 0.9611   Corr Sim: 0.9520
+    Utility(Acc):  0.8617    |  TSTR Acc: 0.6117   TRTR Acc: 0.7500
+    Privacy Risk:  0.5489    |  MIA AUC: 0.6328   NNDR: 0.8918
+    Time: 1551s (25.8 min)
+    Reference F1-HPO objective: 0.6509  |  Utility(F1): 0.9135
+
+    Best Hyperparameters:
+      epochs              = 700
+      batch_size          = 200
+      generator_lr        = 0.00015549858151439857
+      discriminator_lr    = 9.497091130765811e-05
+      generator_dim       = [128, 128]
+      discriminator_dim   = [256, 256]
+      discriminator_steps = 1
+      pac                 = 1
+      default_distribution= truncnorm
+
+#4  GaussianCopula               Objective(Acc): 0.6147
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9411    |  KS Sim: 0.9731   Corr Sim: 0.9092
+    Utility(Acc):  0.8900    |  TSTR Acc: 0.6400   TRTR Acc: 0.7500
+    Privacy Risk:  0.5885    |  MIA AUC: 0.7298   NNDR: 0.9215
+    Time: 31s (0.5 min)
+    Reference F1-HPO objective: 0.6267  |  Utility(F1): 0.9199
+
+    Best Hyperparameters:
+      default_distribution= beta
+      enforce_min_max_values= False
+
+#5  WGAN-GP                      Objective(Acc): 0.5460
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8808    |  KS Sim: 0.8565   Corr Sim: 0.9050
+    Utility(Acc):  0.8383    |  TSTR Acc: 0.5883   TRTR Acc: 0.7500
+    Privacy Risk:  0.7085    |  MIA AUC: 0.9720   NNDR: 0.9252
+    Time: 564s (9.4 min)
+    Reference F1-HPO objective: 0.6093  |  Utility(F1): 0.7325
+
+    Best Hyperparameters:
+      epochs              = 1200
+      batch_size          = 32
+      latent_dim          = 32
+      hidden_dim          = 64
+      lr                  = 0.0002420242203359792
+      n_critic            = 5
+      lambda_gp           = 12.530775824318832
+
+#6  CTAB-GAN+                    Objective(Acc): 0.4156
+    ─────────────────────────────────────────────────
+    Fidelity:      0.7150    |  KS Sim: 0.6513   Corr Sim: 0.7788
+    Utility(Acc):  0.6650    |  TSTR Acc: 0.4150   TRTR Acc: 0.7500
+    Privacy Risk:  0.6819    |  MIA AUC: 0.9205   NNDR: 0.9279
+    Time: 237s (4.0 min)
+    Reference F1-HPO objective: 0.3032  |  Utility(F1): 0.2491
+
+    Best Hyperparameters:
+      epochs              = 125
+      batch_size          = 500
+      random_dim          = 100
+      num_channels        = 32
+      class_dim           = [128, 128, 128]
+      l2scale             = 2.3270677083837795e-06
+
+================================================================================
+                        SKIPPED / EXCLUDED
+================================================================================
+
+  ForestDiffusion: Not included in this 6-generator cdc_diabetes sweep.
+  TabDDPM:         Dependencies not installed / excluded from phase-1 sweeps.
+
+================================================================================
+                        KEY OBSERVATIONS
+================================================================================
+
+  1. Winner by Acc objective: TVAE (0.6443).
+  2. Top fidelity: CTGAN (0.9675).
+  3. Best Acc utility: TVAE (0.9400).
+  4. Lowest privacy risk: CTGAN (0.5330).
+  5. Ranking uses Accuracy utility; F1-HPO objectives kept as reference only.
+
+================================================================================
+  Generated: 2026-09-03 | Framework: Optuna TPE | Dataset: cdc_diabetes | Generators: 6
+================================================================================

@@ -1,0 +1,24 @@
+Energy Efficiency HPO — 6 generators, 1000 samples (regression) — detached on patten
+
+PID file: energy_efficiency_6gen.pid
+Log:      energy_efficiency_6gen_run.log
+
+Generators: gaussian_copula, copulagan, ctgan, tvae, ctabgan, wgan_gp
+Trials: 20 each | max_samples=1000 (full set ≈768 → train≈614, test≈154)
+Task: regression (target=Y1) | Utility: R² TSTR/TRTR
+Preprocessing: impute + encode_categorical (global defaults)
+
+Check:
+  ps -p $(cat results/regression/14_energy_efficiency/energy_efficiency_6gen.pid) -o pid,etime,pcpu,cmd
+
+Follow:
+  tail -f results/regression/14_energy_efficiency/energy_efficiency_6gen_run.log
+
+Done when all completed.json exist under:
+  results/regression/14_energy_efficiency/{generator}/
+
+Reports (auto-written after sweep):
+  energy_efficiency_HPO_results.xlsx
+  energy_efficiency_HPO_notation.txt
+
+Safe to lock PC — process parent is systemd. Keep patten powered on.

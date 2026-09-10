@@ -1,0 +1,108 @@
+# CTGAN — Xu et al. (2019) "Modeling Tabular data using Conditional GAN"
+# Defaults match SDV CTGANSynthesizer / official CTGAN (epochs=300, bs=500,
+# lr=2e-4, dims=[256,256], pac=10, discriminator_steps=1).
+
+generator: ctgan
+backend: sdv.single_table.CTGANSynthesizer
+references:
+  - "Xu, L., Skoularidou, M., Cuesta-Infante, A., & Veeramachaneni, K. (2019). Modeling Tabular data using Conditional GAN. NeurIPS."
+  - "SDV CTGANSynthesizer defaults"
+
+defaults:
+  epochs: 300
+  batch_size: 500
+  generator_lr: 2.0e-4
+  discriminator_lr: 2.0e-4
+  generator_dim: [256, 256]
+  discriminator_dim: [256, 256]
+  discriminator_steps: 1
+  pac: 10
+
+search_space:
+  epochs:
+    type: int
+    suggest: int
+    low: 100
+    high: 1000
+    step: 50
+    default: 300
+    explanation: >
+      Training epochs. Under-training collapses modes; over-training can harm
+      utility on small tables. Paper/SDV default is 300; larger datasets often
+      need more.
+
+  batch_size:
+    type: categorical
+    suggest: categorical
+    choices: [100, 200, 500, 1000]
+    default: 500
+    explanation: >
+      Mini-batch size (must be divisible by pac). Affects gradient noise and
+      conditional-vector coverage; 500 is the CTGAN/SDV default.
+
+  generator_lr:
+    type: float
+    suggest: float
+    low: 1.0e-5
+    high: 1.0e-3
+    log: true
+    default: 2.0e-4
+    explanation: >
+      Adam learning rate for the generator (paper/SDV: 2e-4). Too high →
+      unstable training; too low → poor mode coverage.
+
+  discriminator_lr:
+    type: float
+    suggest: float
+    low: 1.0e-5
+    high: 1.0e-3
+    log: true
+    default: 2.0e-4
+    explanation: >
+      Adam learning rate for the discriminator (paper/SDV: 2e-4). Balance with
+      generator_lr controls GAN dynamics and sample fidelity.
+
+  generator_dim:
+    type: categorical
+    suggest: categorical
+    choices:
+      - [128, 128]
+      - [256, 256]
+      - [256, 256, 256]
+      - [512, 512]
+    default: [256, 256]
+    explanation: >
+      Residual FC hidden widths of the generator. Capacity controls how complex
+      conditionals can be modelled; [256,256] is the official default.
+
+  discriminator_dim:
+    type: categorical
+    suggest: categorical
+    choices:
+      - [128, 128]
+      - [256, 256]
+      - [256, 256, 256]
+      - [512, 512]
+    default: [256, 256]
+    explanation: >
+      Discriminator hidden widths. Under-powered D → weak gradients; oversized D
+      → overfitting to real batch (privacy/utility trade-off).
+
+  discriminator_steps:
+    type: int
+    suggest: int
+    low: 1
+    high: 5
+    default: 1
+    explanation: >
+      Discriminator updates per generator update. >1 can stabilize training on
+      hard tables (WGAN-style); CTGAN default is 1.
+
+  pac:
+    type: categorical
+    suggest: categorical
+    choices: [1, 5, 10]
+    default: 10
+    explanation: >
+      PacGAN packing size — discriminator sees pac samples at once to reduce
+      mode collapse (CTGAN paper uses 10). Must divide batch_size.

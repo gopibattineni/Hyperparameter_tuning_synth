@@ -1,0 +1,7 @@
+{
+  "dataset": "magic_gamma",
+  "generator": "tvae",
+  "best_value": 0.6619108588570912,
+  "elapsed_sec": 884.1926539479755,
+  "status": "completed"
+}

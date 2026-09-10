@@ -1,0 +1,7 @@
+{
+  "dataset": "bank_marketing",
+  "generator": "wgan_gp",
+  "best_value": 0.5328846040625627,
+  "elapsed_sec": 765.3425053390674,
+  "status": "completed"
+}

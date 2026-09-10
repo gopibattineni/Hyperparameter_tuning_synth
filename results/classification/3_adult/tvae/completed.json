@@ -1,0 +1,7 @@
+{
+  "dataset": "adult",
+  "generator": "tvae",
+  "best_value": 0.6321713658620507,
+  "elapsed_sec": 417.41377941297833,
+  "status": "completed"
+}

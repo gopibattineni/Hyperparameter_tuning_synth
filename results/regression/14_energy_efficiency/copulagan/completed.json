@@ -1,0 +1,7 @@
+{
+  "dataset": "energy_efficiency",
+  "generator": "copulagan",
+  "best_value": 0.5976561625469576,
+  "elapsed_sec": 697.2105616461486,
+  "status": "completed"
+}

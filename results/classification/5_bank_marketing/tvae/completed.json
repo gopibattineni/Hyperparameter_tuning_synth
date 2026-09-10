@@ -1,0 +1,7 @@
+{
+  "dataset": "bank_marketing",
+  "generator": "tvae",
+  "best_value": 0.6496931665441271,
+  "elapsed_sec": 733.0370446059387,
+  "status": "completed"
+}

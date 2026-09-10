@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.env
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Optuna / run artifacts that are large or regenerable
+*.pkl
+**/best_synthetic.csv
+**/plots/*.html
+results/_archive/
+results/_smoke/
+*.log
+
+# Keep summary tables, configs, notation, and manuscript figures tracked.

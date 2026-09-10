@@ -1,0 +1,23 @@
+MAGIC Gamma HPO — 6 generators, 1000 balanced samples — detached on patten
+
+PID file: magic_gamma_6gen.pid
+Log:      magic_gamma_6gen_run.log
+
+Generators: gaussian_copula, copulagan, ctgan, tvae, ctabgan, wgan_gp
+Trials: 20 each | max_samples=1000 balanced (train≈800, test≈200)
+Preprocessing: impute + encode_categorical (global defaults)
+
+Check:
+  ps -p $(cat results/classification/9_magic_gamma/magic_gamma_6gen.pid) -o pid,etime,pcpu,cmd
+
+Follow:
+  tail -f results/classification/9_magic_gamma/magic_gamma_6gen_run.log
+
+Done when all completed.json exist under:
+  results/classification/9_magic_gamma/{generator}/
+
+Reports (auto-written after sweep):
+  magic_gamma_HPO_results.xlsx
+  magic_gamma_HPO_notation.txt
+
+Safe to lock PC — process parent is systemd. Keep patten powered on.

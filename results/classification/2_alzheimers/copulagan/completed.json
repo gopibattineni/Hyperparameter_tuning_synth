@@ -1,0 +1,7 @@
+{
+  "dataset": "alzheimers",
+  "generator": "copulagan",
+  "best_value": 0.5685300211535939,
+  "elapsed_sec": 611.2480651177466,
+  "status": "completed"
+}

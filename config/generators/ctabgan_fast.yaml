@@ -1,0 +1,62 @@
+# CTAB-GAN+ — fast HPO profile (forest_cover / overnight runs)
+# Smaller search space + lower epoch cap vs ctabgan.yaml
+
+generator: ctabgan
+backend: ctabgan_plus
+references:
+  - "Zhao, Z. et al. (2023). CTAB-GAN+. Frontiers in Big Data."
+  - "https://github.com/Team-TUD/CTAB-GAN-Plus"
+
+defaults:
+  epochs: 100
+  batch_size: 500
+  random_dim: 100
+  num_channels: 64
+  class_dim: [128, 128, 128]
+  l2scale: 1.0e-5
+
+search_space:
+  epochs:
+    type: int
+    suggest: int
+    low: 75
+    high: 125
+    step: 25
+    default: 100
+    explanation: "Capped at 125 epochs for faster trials (full profile goes to 300)."
+
+  batch_size:
+    type: categorical
+    suggest: categorical
+    choices: [500]
+    default: 500
+    explanation: "Large batch only — fewer steps per epoch."
+
+  random_dim:
+    type: categorical
+    suggest: categorical
+    choices: [100]
+    default: 100
+
+  num_channels:
+    type: categorical
+    suggest: categorical
+    choices: [32, 64]
+    default: 64
+    explanation: "Skip 128-channel runs (much slower)."
+
+  class_dim:
+    type: categorical
+    suggest: categorical
+    choices:
+      - [128, 128, 128]
+    default: [128, 128, 128]
+    explanation: "Smallest classifier head only."
+
+  l2scale:
+    type: float
+    suggest: float
+    low: 1.0e-6
+    high: 1.0e-4
+    log: true
+    default: 1.0e-5

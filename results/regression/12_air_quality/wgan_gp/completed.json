@@ -1,0 +1,7 @@
+{
+  "dataset": "air_quality",
+  "generator": "wgan_gp",
+  "best_value": 0.6265670972322265,
+  "elapsed_sec": 636.2197799750138,
+  "status": "completed"
+}

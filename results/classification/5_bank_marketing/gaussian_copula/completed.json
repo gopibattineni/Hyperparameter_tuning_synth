@@ -1,0 +1,7 @@
+{
+  "dataset": "bank_marketing",
+  "generator": "gaussian_copula",
+  "best_value": 0.5592679208236706,
+  "elapsed_sec": 22.575024346122518,
+  "status": "completed"
+}

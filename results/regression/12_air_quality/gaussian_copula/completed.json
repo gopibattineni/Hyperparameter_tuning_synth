@@ -1,0 +1,7 @@
+{
+  "dataset": "air_quality",
+  "generator": "gaussian_copula",
+  "best_value": 0.6091088998099426,
+  "elapsed_sec": 16.878244451945648,
+  "status": "completed"
+}

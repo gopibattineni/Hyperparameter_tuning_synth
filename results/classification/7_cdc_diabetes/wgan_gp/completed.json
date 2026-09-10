@@ -1,0 +1,7 @@
+{
+  "dataset": "cdc_diabetes",
+  "generator": "wgan_gp",
+  "best_value": 0.609315068707981,
+  "elapsed_sec": 564.4574520729948,
+  "status": "completed"
+}

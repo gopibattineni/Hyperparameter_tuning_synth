@@ -1,0 +1,13 @@
+CDC Diabetes — CTAB-GAN FAST (10) + WGAN-GP (20) with NEW discrete encoding — detached
+
+PID file: cdc_diabetes_6gen.pid
+Log:      cdc_diabetes_6gen_run.log
+
+Encoding: max_int_categories=20 → 19 discrete cols label-encoded; 2 continuous (BMI, PhysHlth)
+Skipped (already done): gaussian_copula, copulagan, ctgan, tvae
+
+Check:
+  ps -p $(cat results/classification/7_cdc_diabetes/cdc_diabetes_6gen.pid) -o pid,etime,pcpu,cmd
+  tail -f results/classification/7_cdc_diabetes/cdc_diabetes_6gen_run.log
+
+Safe to lock PC — parent is systemd. Keep patten powered on.

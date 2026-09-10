@@ -1,0 +1,7 @@
+{
+  "dataset": "mushroom",
+  "generator": "copulagan",
+  "best_value": 0.6329347788210924,
+  "elapsed_sec": 1806.994658287149,
+  "status": "completed"
+}

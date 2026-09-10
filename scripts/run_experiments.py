@@ -32,7 +32,7 @@ from config_utils import PACKAGE_ROOT, load_config
 from datasets.loader import load_dataset_config
 from generators import list_generators
 from generators.registry import get_generator_class
-from tuning.artifacts import is_completed
+from tuning.artifacts import is_completed, run_dir
 from tuning.optimizer import run_study
 
 # Canonical 8 research generators (bootstrap_noise excluded from full sweeps)
@@ -128,7 +128,8 @@ def main(argv: list[str] | None = None) -> int:
     results_root.mkdir(parents=True, exist_ok=True)
     master_path = results_root / MASTER_CSV
 
-    all_datasets = list(load_dataset_config().keys())
+    all_cfg = load_dataset_config()
+    all_datasets = list(all_cfg.keys())
     datasets = args.datasets or all_datasets
     generators = args.generators or RESEARCH_GENERATORS
 
@@ -175,7 +176,10 @@ def main(argv: list[str] | None = None) -> int:
     for dataset_key, generator_name in pbar:
         pbar.set_postfix(ds=dataset_key, gen=generator_name)
 
-        if resume and is_completed(results_root, dataset_key, generator_name):
+        task = str((all_cfg.get(dataset_key) or {}).get("task", "classification"))
+        pair_dir = run_dir(results_root, dataset_key, generator_name, task=task)
+
+        if resume and is_completed(results_root, dataset_key, generator_name, task=task):
             row = {
                 "dataset": dataset_key,
                 "generator": generator_name,
@@ -187,11 +191,11 @@ def main(argv: list[str] | None = None) -> int:
                 "fidelity": None,
                 "utility": None,
                 "privacy_risk": None,
-                "run_dir": str(results_root / dataset_key / generator_name),
+                "run_dir": str(pair_dir),
                 "error": None,
             }
             # Try to enrich from existing metrics.json
-            metrics_path = results_root / dataset_key / generator_name / "metrics.json"
+            metrics_path = pair_dir / "metrics.json"
             if metrics_path.is_file():
                 import json
                 m = json.loads(metrics_path.read_text())

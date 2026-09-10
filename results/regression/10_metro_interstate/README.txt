@@ -1,0 +1,12 @@
+index=10
+dataset=metro_interstate
+folder=10_metro_interstate
+phase=phase2_regression
+task=regression
+target=traffic_volume
+max_samples=1000
+drop_columns=[date_time]
+generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp
+n_trials=20
+note=full fair rerun without date_time
+launch=start_metro_interstate_6gen.sh (detached via setsid on patten)

@@ -1,0 +1,7 @@
+{
+  "dataset": "cancer",
+  "generator": "ctgan",
+  "best_value": 0.6348998833101148,
+  "elapsed_sec": 2471.5153182642534,
+  "status": "completed"
+}

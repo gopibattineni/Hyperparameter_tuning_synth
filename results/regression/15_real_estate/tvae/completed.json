@@ -1,0 +1,7 @@
+{
+  "dataset": "real_estate",
+  "generator": "tvae",
+  "best_value": 0.5494570818381801,
+  "elapsed_sec": 174.20854470785707,
+  "status": "completed"
+}

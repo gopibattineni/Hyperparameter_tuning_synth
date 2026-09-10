@@ -1,0 +1,7 @@
+{
+  "dataset": "cdc_diabetes",
+  "generator": "copulagan",
+  "best_value": 0.6508885675882032,
+  "elapsed_sec": 1550.8927298372146,
+  "status": "completed"
+}

@@ -1,0 +1,7 @@
+{
+  "dataset": "online_shopping",
+  "generator": "copulagan",
+  "best_value": 0.5392218648806477,
+  "elapsed_sec": 2125.745246100938,
+  "status": "completed"
+}

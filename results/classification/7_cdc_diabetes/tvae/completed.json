@@ -1,0 +1,7 @@
+{
+  "dataset": "cdc_diabetes",
+  "generator": "tvae",
+  "best_value": 0.6711932586262284,
+  "elapsed_sec": 749.9701912410092,
+  "status": "completed"
+}

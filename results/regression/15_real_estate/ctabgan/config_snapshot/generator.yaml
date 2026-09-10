@@ -1,0 +1,80 @@
+# CTAB-GAN+ — Zhao et al. (2023); Team-TUD/CTAB-GAN-Plus
+# Official defaults: epochs=150, batch_size=500, random_dim=100,
+# num_channels=64, class_dim=(256,256,256,256), l2scale=1e-5.
+# Paper trains 150 epochs (large data) or 300 (small data).
+
+generator: ctabgan
+backend: ctabgan_plus
+references:
+  - "Zhao, Z. et al. (2023). CTAB-GAN+: Enhancing Tabular Data Synthesis. Frontiers in Big Data."
+  - "https://github.com/Team-TUD/CTAB-GAN-Plus (model/ctabgan.py defaults)"
+
+defaults:
+  epochs: 150
+  batch_size: 500
+  random_dim: 100
+  num_channels: 64
+  class_dim: [256, 256, 256, 256]
+  l2scale: 1.0e-5
+
+search_space:
+  epochs:
+    type: int
+    suggest: int
+    low: 100
+    high: 300
+    step: 25
+    default: 150
+    explanation: >
+      Training epochs. Paper uses 150 on large tables and 300 on small ones;
+      official code default is 150. Primary lever for synthesis quality.
+
+  batch_size:
+    type: categorical
+    suggest: categorical
+    choices: [50, 100, 500]
+    default: 500
+    explanation: >
+      Mini-batch size (official default 500). Smaller batches add noise and can
+      help small datasets; too small destabilizes WGAN-GP training.
+
+  random_dim:
+    type: categorical
+    suggest: categorical
+    choices: [50, 100, 150]
+    default: 100
+    explanation: >
+      Latent noise dimension into the CNN generator (default 100). Controls
+      diversity of generated rows; too small → mode collapse.
+
+  num_channels:
+    type: categorical
+    suggest: categorical
+    choices: [32, 64, 128]
+    default: 64
+    explanation: >
+      Base channel width of generator/discriminator convolutions (default 64).
+      Capacity for capturing column interactions in the table-as-image encoding.
+
+  class_dim:
+    type: categorical
+    suggest: categorical
+    choices:
+      - [128, 128, 128]
+      - [256, 256, 256, 256]
+      - [512, 512, 512]
+    default: [256, 256, 256, 256]
+    explanation: >
+      Auxiliary classifier MLP widths used in information/classifier losses
+      (default 4×256). Strongly affects conditional fidelity on the target.
+
+  l2scale:
+    type: float
+    suggest: float
+    low: 1.0e-6
+    high: 1.0e-4
+    log: true
+    default: 1.0e-5
+    explanation: >
+      Adam weight decay for G/D/classifier (default 1e-5). Mild regularization
+      against memorization while preserving utility.

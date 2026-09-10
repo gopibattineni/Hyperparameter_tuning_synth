@@ -1,0 +1,7 @@
+{
+  "dataset": "online_shopping",
+  "generator": "gaussian_copula",
+  "best_value": 0.34238162244683173,
+  "elapsed_sec": 17.597282441798598,
+  "status": "completed"
+}

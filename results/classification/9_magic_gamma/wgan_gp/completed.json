@@ -1,0 +1,7 @@
+{
+  "dataset": "magic_gamma",
+  "generator": "wgan_gp",
+  "best_value": 0.6686602200853253,
+  "elapsed_sec": 574.4698977710214,
+  "status": "completed"
+}

@@ -1,0 +1,27 @@
+Forest Cover × CTAB-GAN+ (FAST) — resilient 18h run on patten
+
+Worker PID file:  ctabgan.pid
+Watchdog PID:     ctabgan_watchdog.pid
+Worker log:       ctabgan_fast_run.log
+Watchdog log:     ctabgan_watchdog.log
+
+What runs:
+  - CTAB-GAN+ HPO (10 trials, fast profile)
+  - Watchdog checks every 2 min for 18 hours
+  - If worker dies → auto-restart with --resume
+
+Check worker:
+  ps -p $(cat results/classification/4_forest_cover/ctabgan.pid) -o pid,etime,pcpu,cmd
+
+Check watchdog:
+  ps -p $(cat results/classification/4_forest_cover/ctabgan_watchdog.pid) -o pid,etime,cmd
+
+Follow logs:
+  tail -f results/classification/4_forest_cover/ctabgan_fast_run.log
+  tail -f results/classification/4_forest_cover/ctabgan_watchdog.log
+
+Done when:
+  results/classification/4_forest_cover/ctabgan/completed.json
+
+Safe to lock PC / disconnect — both processes parent is systemd on patten.
+Keep the patten server powered on.

@@ -1,0 +1,7 @@
+{
+  "dataset": "wine_quality",
+  "generator": "tvae",
+  "best_value": 0.6490865543920467,
+  "elapsed_sec": 702.1254705488682,
+  "status": "completed"
+}

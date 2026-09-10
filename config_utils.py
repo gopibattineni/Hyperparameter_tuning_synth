@@ -16,8 +16,8 @@ except ImportError as exc:  # pragma: no cover
 # hyper parameter tuning/ package root
 PACKAGE_ROOT = Path(__file__).resolve().parent
 CONFIG_ROOT = PACKAGE_ROOT / "config"
-# Benchmark data / generators / vendor live under Part 1/
-REPO_ROOT = PACKAGE_ROOT.parent / "Part 1"
+# Benchmark data / generators / vendor live under SYNTH_BENCHMARK/SYNTH
+REPO_ROOT = Path("/home/gopi.battineni/SYNTH_BENCHMARK/SYNTH")
 
 
 def load_yaml(path: Path | str) -> dict[str, Any]:

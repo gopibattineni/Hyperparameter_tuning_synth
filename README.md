@@ -1,13 +1,13 @@
 # Optuna HPO for synthetic tabular generators
 
-All framework files live in this single folder:
+Find hyperparameters that produce high-quality synthetic tabular data across multiple generators and datasets.
 
-`SYNTH_BENCHMARK/hyper parameter tuning/`
+**Full project documentation:** [DOCUMENTATION.md](DOCUMENTATION.md)
 
 ## Layout
 
 ```text
-hyper parameter tuning/
+Hyperparameter_tuning_synth/
 ├── config/                 # YAML configs + generator search spaces
 ├── generators/             # BaseGenerator + wrappers
 ├── datasets/               # DatasetSpec + loader
@@ -17,37 +17,42 @@ hyper parameter tuning/
 ├── results/                # run outputs
 ├── config_utils.py
 ├── requirements-hpo.txt
+├── DOCUMENTATION.md
 └── README.md
+```
+
+## Objective
+
+```text
+0.4 × Fidelity + 0.4 × Utility − 0.2 × PrivacyRisk   (maximize)
 ```
 
 ## Generators (8)
 
 GaussianCopula · CopulaGAN · CTGAN · CTAB-GAN+ · TVAE · WGAN-GP · ForestDiffusion · TabDDPM
 
-## Run the 15 × 8 sweep
+## Quick start
 
 ```bash
-cd "hyper parameter tuning"
+cd /home/gopi.battineni/Hyperparameter_tuning_synth
 pip install -r requirements-hpo.txt
 
-python scripts/run_experiments.py --n-trials 50
-# resume (default): skips completed pairs
-python scripts/run_experiments.py --resume
-# subset
-python scripts/run_experiments.py --datasets cancer adult --generators ctgan tvae --n-trials 10
-# single pair
+# Priority sweep
+python scripts/run_experiments.py --datasets cancer alzheimers adult --n-trials 20 --resume
+
+# Single pair
 python scripts/run_tuning.py --generator ctgan --dataset cancer --n-trials 10
 ```
 
 Outputs land in `results/`:
+
 - `all_experiments.csv` — master log
-- `experiment_summary.csv` — this run
-- `{dataset}/{generator}/best_params.json`, `best_synthetic.csv`, `metrics.json`, `trials.csv`, `timing.json`, `completed.json`
+- `{classification|regression}/{n}_{dataset}/{generator}/best_params.json`, `metrics.json`, `best_synthetic.csv`, `trials.csv`, `completed.json`
+- Report packs: `results/classification/1_cancer/cancer_HPO_*.{txt,xlsx}`, `results/classification/2_alzheimers/alzheimers_HPO_*.{txt,xlsx}`
 
 ## Quick check
 
 ```bash
-cd "hyper parameter tuning"
 python -c "import sys; sys.path.insert(0,'.'); \
 from datasets import load_train_test, list_datasets; \
 print(list_datasets()); \

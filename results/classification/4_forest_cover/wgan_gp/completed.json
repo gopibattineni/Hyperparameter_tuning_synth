@@ -1,0 +1,7 @@
+{
+  "dataset": "forest_cover",
+  "generator": "wgan_gp",
+  "best_value": 0.4903234326077628,
+  "elapsed_sec": 440.5581526949536,
+  "status": "completed"
+}

@@ -1,0 +1,7 @@
+{
+  "dataset": "energy_efficiency",
+  "generator": "gaussian_copula",
+  "best_value": 0.616940780427084,
+  "elapsed_sec": 11.378552787005901,
+  "status": "completed"
+}

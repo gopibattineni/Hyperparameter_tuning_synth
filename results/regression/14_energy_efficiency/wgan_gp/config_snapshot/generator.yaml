@@ -1,0 +1,87 @@
+# WGAN-GP — Gulrajani et al. (2017), tabular MLP adaptation (Other GANS notebooks)
+# Paper defaults: n_critic=5, lambda_gp=10, Adam lr=1e-4, β1=0, β2=0.9.
+
+generator: wgan_gp
+backend: torch_wgan_gp
+references:
+  - "Gulrajani, I. et al. (2017). Improved Training of Wasserstein GANs. NeurIPS."
+  - "Project Other GANS notebooks (tabular MLP WGAN-GP)"
+
+defaults:
+  epochs: 500
+  batch_size: 64
+  latent_dim: 64
+  hidden_dim: 128
+  lr: 1.0e-4
+  n_critic: 5
+  lambda_gp: 10.0
+
+search_space:
+  epochs:
+    type: int
+    suggest: int
+    low: 200
+    high: 2000
+    step: 100
+    default: 500
+    explanation: >
+      Training iterations/epochs over the table. Tabular WGAN-GP often needs
+      longer training than CTGAN; under-training yields poor fidelity.
+
+  batch_size:
+    type: categorical
+    suggest: categorical
+    choices: [32, 64, 128, 256]
+    default: 64
+    explanation: >
+      Mini-batch size. Gradient-penalty estimation is noisy with very small
+      batches; 64 is a common tabular default in this repo.
+
+  latent_dim:
+    type: categorical
+    suggest: categorical
+    choices: [32, 64, 128]
+    default: 64
+    explanation: >
+      Noise vector size z ~ N(0,I). Controls sample diversity; too small →
+      collapse, too large → harder critic learning.
+
+  hidden_dim:
+    type: categorical
+    suggest: categorical
+    choices: [64, 128, 256]
+    default: 128
+    explanation: >
+      Hidden width of generator/critic MLPs. Main capacity knob for tabular
+      WGAN-GP quality.
+
+  lr:
+    type: float
+    suggest: float
+    low: 1.0e-5
+    high: 5.0e-4
+    log: true
+    default: 1.0e-4
+    explanation: >
+      Adam learning rate for G and critic (WGAN-GP paper: 1e-4). Sensitive —
+      too high breaks Lipschitz enforcement via GP.
+
+  n_critic:
+    type: int
+    suggest: int
+    low: 1
+    high: 10
+    default: 5
+    explanation: >
+      Critic updates per generator update (paper default 5). Essential for
+      stable Wasserstein training and sample quality.
+
+  lambda_gp:
+    type: float
+    suggest: float
+    low: 1.0
+    high: 20.0
+    default: 10.0
+    explanation: >
+      Gradient-penalty coefficient λ (paper default 10). Enforces 1-Lipschitz
+      critic; too low → instability, too high → over-smoothed generator.

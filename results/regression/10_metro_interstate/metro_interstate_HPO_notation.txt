@@ -1,0 +1,126 @@
+================================================================================
+      METRO INTERSTATE — HYPERPARAMETER TUNING RESULTS (Notation File)
+================================================================================
+Dataset: Metro Interstate
+Task: Regression (traffic_volume)
+Tuning Framework: Optuna (TPE Sampler, MedianPruner)
+Trials per Generator: 20
+Sampling: max_samples=1000, seed=42 (random subsample for regression)
+Train/Test sizes after sampling+split: 800 / 200
+Preprocessing: impute (median/mode) + categorical label-encoding (train-fitted)
+Objective (report ranking): MAXIMIZE  0.4×Fidelity + 0.4×Utility(R²) − 0.2×PrivacyRisk
+
+SCOPE: COMPLETE with 6 generators
+  Included: GaussianCopula, CopulaGAN, CTGAN, TVAE, CTAB-GAN+, WGAN-GP
+  Excluded: ForestDiffusion, TabDDPM
+
+================================================================================
+                RESULTS RANKED BY R² OBJECTIVE (Best → Worst)
+================================================================================
+
+#1  TVAE                         Objective(R²): 0.6401
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9262    |  KS Sim: 0.9311   Corr Sim: 0.9213
+    Utility(R²):   1.0000    |  TSTR R²: -3.3888   TRTR R²: -4.4204
+    Privacy Risk:  0.6519    |  MIA AUC: 0.7771   NNDR: 0.7890
+    Time: 395s (6.6 min)
+    Reference HPO objective: 0.6525  |  Utility(HPO): 1.0000
+
+    Best Hyperparameters:
+      epochs              = 750
+      batch_size          = 200
+      embedding_dim       = 64
+      compress_dims       = [128, 128]
+      decompress_dims     = [256, 256]
+      l2scale             = 0.00020829075544011324
+      loss_factor         = 10
+
+#2  CTGAN                        Objective(R²): 0.6157
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8894    |  KS Sim: 0.8545   Corr Sim: 0.9243
+    Utility(R²):   1.0000    |  TSTR R²: -2.6673   TRTR R²: -4.4204
+    Privacy Risk:  0.7005    |  MIA AUC: 0.9377   NNDR: 0.8945
+    Time: 1315s (21.9 min)
+    Reference HPO objective: 0.6163  |  Utility(HPO): 1.0000
+
+    Best Hyperparameters:
+      epochs              = 850
+      batch_size          = 500
+      generator_lr        = 0.00048509235312728903
+      discriminator_lr    = 0.00010731289029521516
+      generator_dim       = [256, 256]
+      discriminator_dim   = [512, 512]
+      discriminator_steps = 5
+      pac                 = 5
+
+#3  GaussianCopula               Objective(R²): 0.5012
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9098    |  KS Sim: 0.9102   Corr Sim: 0.9094
+    Utility(R²):   0.6932    |  TSTR R²: -4.7272   TRTR R²: -4.4204
+    Privacy Risk:  0.7002    |  MIA AUC: 0.9827   NNDR: 0.9704
+    Time: 13s (0.2 min)
+    Reference HPO objective: 0.4144  |  Utility(HPO): 0.4764
+
+    Best Hyperparameters:
+      default_distribution= gamma
+      enforce_min_max_values= False
+
+#4  CopulaGAN                    Objective(R²): 0.4398
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8955    |  KS Sim: 0.9150   Corr Sim: 0.8761
+    Utility(R²):   0.5519    |  TSTR R²: -4.8685   TRTR R²: -4.4204
+    Privacy Risk:  0.6959    |  MIA AUC: 0.9723   NNDR: 0.9676
+    Time: 470s (7.8 min)
+    Reference HPO objective: 0.6190  |  Utility(HPO): 0.3309
+
+    Best Hyperparameters:
+      epochs              = 200
+      batch_size          = 500
+      generator_lr        = 3.488976654890367e-05
+      discriminator_lr    = 0.00045443839603360173
+      generator_dim       = [256, 256, 256]
+      discriminator_dim   = [256, 256]
+      discriminator_steps = 1
+      pac                 = 1
+      default_distribution= truncnorm
+
+#5  WGAN-GP                      Objective(R²): 0.1964
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8445    |  KS Sim: 0.7989   Corr Sim: 0.8902
+    Utility(R²):   0.0000    |  TSTR R²: -6.2119   TRTR R²: -4.4204
+    Privacy Risk:  0.7069    |  MIA AUC: 0.9998   NNDR: 0.9765
+    Time: 508s (8.5 min)
+    Reference HPO objective: 0.6013  |  Utility(HPO): 1.0000
+
+    Best Hyperparameters:
+      epochs              = 1700
+      batch_size          = 256
+      latent_dim          = 32
+      hidden_dim          = 64
+      lr                  = 0.0002652311119195149
+      n_critic            = 10
+      lambda_gp           = 7.086454969900416
+
+#6  CTAB-GAN+                    Objective(R²): 0.1401
+    ─────────────────────────────────────────────────
+    Fidelity:      0.7054    |  KS Sim: 0.4613   Corr Sim: 0.9496
+    Utility(R²):   0.0000    |  TSTR R²: -27.4971   TRTR R²: -4.4204
+    Privacy Risk:  0.7102    |  MIA AUC: 0.9999   NNDR: 0.9657
+    Time: 1030s (17.2 min)
+    Reference HPO objective: 0.5461  |  Utility(HPO): 0.0000
+
+    Best Hyperparameters:
+      epochs              = 100
+      batch_size          = 500
+      l2scale             = 2.101079931010356e-06
+      random_dim          = 150
+      num_channels        = 128
+      class_dim           = [512, 512, 512]
+
+================================================================================
+NOTES
+================================================================================
+  Utility uses Train-on-Synthetic-Test-on-Real (TSTR) R² vs TRTR R² gap.
+  Regressors in report: LinearRegression, RandomForest, DecisionTree.
+  ForestDiffusion / TabDDPM: Not included in this 6-generator sweep.
+  Generated: 2026-09-07 | Framework: Optuna TPE | Dataset: metro_interstate | Generators: 6

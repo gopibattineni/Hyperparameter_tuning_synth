@@ -1,0 +1,7 @@
+{
+  "dataset": "cancer",
+  "generator": "copulagan",
+  "best_value": 0.5975831039200459,
+  "elapsed_sec": 1034.7464935416356,
+  "status": "completed"
+}

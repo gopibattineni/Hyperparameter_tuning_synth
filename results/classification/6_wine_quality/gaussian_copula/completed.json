@@ -1,0 +1,7 @@
+{
+  "dataset": "wine_quality",
+  "generator": "gaussian_copula",
+  "best_value": 0.5741129778709819,
+  "elapsed_sec": 19.122899306938052,
+  "status": "completed"
+}

@@ -1,0 +1,18 @@
+Online Shopping HPO — FULL 6-gen fair rerun — detached on patten
+
+PID file: online_shopping_6gen.pid
+Log:      online_shopping_6gen_fair_rerun.log
+
+Generators: gaussian_copula, copulagan, ctgan, tvae, ctabgan, wgan_gp
+Trials: 20 each | max_samples=1000 (train≈800, test≈200)
+Task: regression (target=price 2) | Utility: R² TSTR/TRTR
+Dropped: session ID, page 2 (clothing model)
+Also: max_int_categories=60; year/day/order forced categorical (fixes CTAB-GAN sampling hang)
+
+Check:
+  ps -p $(cat results/regression/11_online_shopping/online_shopping_6gen.pid) -o pid,etime,pcpu,cmd
+
+Follow:
+  tail -f results/regression/11_online_shopping/online_shopping_6gen_fair_rerun.log
+
+Reports auto-write when finished. Safe to lock PC — keep patten powered on.

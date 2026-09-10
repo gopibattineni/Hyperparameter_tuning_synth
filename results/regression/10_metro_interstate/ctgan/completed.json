@@ -1,0 +1,7 @@
+{
+  "dataset": "metro_interstate",
+  "generator": "ctgan",
+  "best_value": 0.6162554827531256,
+  "elapsed_sec": 1315.126414506929,
+  "status": "completed"
+}

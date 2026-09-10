@@ -1,0 +1,8 @@
+{
+  "n_t": 100,
+  "duplicate_K": 100,
+  "diffusion_type": "flow",
+  "max_depth": 4,
+  "n_estimators": 50,
+  "eta": 0.3861397180825532
+}

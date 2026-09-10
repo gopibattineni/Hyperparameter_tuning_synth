@@ -1,0 +1,7 @@
+{
+  "dataset": "alzheimers",
+  "generator": "tvae",
+  "best_value": 0.6524244222896696,
+  "elapsed_sec": 204.9019208020036,
+  "status": "completed"
+}
