@@ -90,11 +90,11 @@ class CTABGANGenerator(BaseGenerator):
         return self
 
     # Maximum seconds a single generate_samples() call may take before we
-    # give up and let Optuna prune the trial.  The vendor code already has a
-    # 600 s internal loop; we add a hard wall-clock cap on top so that even
-    # the wrapper-level retries cannot accumulate unbounded time.
-    _SAMPLE_TIMEOUT_S: float = 120.0
-    _MAX_RETRIES: int = 2
+    # give up and let Optuna prune the trial.  Forest Cover sampling often
+    # needs ~10–15 min (was wrongly capped at 120s → all trials pruned).
+    # Pathological hangs (hours) are still cut off.
+    _SAMPLE_TIMEOUT_S: float = 600.0
+    _MAX_RETRIES: int = 1
 
     def sample(self, n: int, seed: int | None = None) -> pd.DataFrame:
         import time as _time
@@ -296,35 +296,63 @@ class ForestDiffusionGenerator(BaseGenerator):
         self._columns = list(train_df.columns)
         self._discrete_levels = discrete_levels_from_train(train_df, metadata)
         target = getattr(metadata, "target", None)
-        X = train_df.copy()
-        # ForestDiffusion often wants numeric X; label-encode objects
-        for c in X.columns:
-            if not pd.api.types.is_numeric_dtype(X[c]):
-                X[c] = pd.Categorical(X[c].astype(str)).codes
+        task = getattr(metadata, "task", None)
+        work = train_df.copy()
+        for c in work.columns:
+            if not pd.api.types.is_numeric_dtype(work[c]):
+                work[c] = pd.Categorical(work[c].astype(str)).codes
 
-        self._X_cols = list(X.columns)
-        arr = X.to_numpy(dtype=float)
         cat_names = set(getattr(metadata, "categorical_columns", ()) or ())
-        if target and getattr(metadata, "task", None) == "classification":
+        if target and task == "classification":
             cat_names.add(target)
-        # Also mark low-cardinality integer columns as categorical indexes
         cat_names.update(self._discrete_levels.keys())
-        cat_idx = [i for i, c in enumerate(self._X_cols) if c in cat_names]
+
+        feature_cols = [c for c in work.columns if c != target] if target else list(work.columns)
+        bin_cols: list[str] = []
+        multi_cat: list[str] = []
+        for c in feature_cols:
+            nunique = int(work[c].nunique(dropna=True))
+            if c in cat_names and nunique <= 2:
+                bin_cols.append(c)
+            elif c in cat_names:
+                multi_cat.append(c)
+
+        self._target = target
+        self._classification = bool(target and task == "classification")
+        self._feature_cols = feature_cols
+        if self._classification:
+            label_y = work[target].to_numpy()
+            arr = work[feature_cols].to_numpy(dtype=float)
+            bin_indexes = [feature_cols.index(c) for c in bin_cols]
+            cat_indexes = [feature_cols.index(c) for c in multi_cat]
+        else:
+            label_y = None
+            arr = work.to_numpy(dtype=float)
+            self._feature_cols = list(work.columns)
+            bin_indexes = [self._feature_cols.index(c) for c in bin_cols]
+            cat_indexes = [self._feature_cols.index(c) for c in multi_cat]
+
         kwargs = dict(
             n_t=int(self.params.get("n_t", 50)),
             duplicate_K=int(self.params.get("duplicate_K", 100)),
-            cat_indexes=cat_idx,
-            n_jobs=1,
+            n_estimators=int(self.params.get("n_estimators", 100)),
+            max_depth=int(self.params.get("max_depth", 7)),
+            eta=float(self.params.get("eta", 0.3)),
+            bin_indexes=bin_indexes,
+            cat_indexes=cat_indexes,
+            n_jobs=int(self.params.get("n_jobs", 1)),
+            seed=int(self.params.get("seed", 42)),
+            label_y=label_y,
         )
-        # Optional XGB hypers
-        if "max_depth" in self.params or "n_estimators" in self.params or "eta" in self.params:
-            kwargs["max_depth"] = int(self.params.get("max_depth", 7))
-            # API varies across versions — try common names
         diffusion_type = self.params.get("diffusion_type", "vp")
         try:
             self._model = ForestDiffusionModel(arr, diffusion_type=diffusion_type, **kwargs)
         except TypeError:
-            self._model = ForestDiffusionModel(arr, **kwargs)
+            kwargs.pop("label_y", None)
+            try:
+                self._model = ForestDiffusionModel(arr, diffusion_type=diffusion_type, **kwargs)
+            except TypeError:
+                self._model = ForestDiffusionModel(arr, **kwargs)
         self.is_fitted = True
         return self
 
@@ -335,7 +363,15 @@ class ForestDiffusionGenerator(BaseGenerator):
             arr = self._model.generate(n_samples=n)
         except TypeError:
             arr = self._model.generate(batch_size=n)
-        out = pd.DataFrame(arr, columns=self._X_cols)
+        if getattr(self, "_classification", False) and arr.shape[1] == len(self._feature_cols) + 1:
+            out = pd.DataFrame(arr[:, :-1], columns=self._feature_cols)
+            out[self._target] = arr[:, -1]
+        elif arr.shape[1] == len(self._columns):
+            out = pd.DataFrame(arr, columns=self._columns)
+        else:
+            out = pd.DataFrame(arr[:, : len(self._feature_cols)], columns=self._feature_cols)
+            if getattr(self, "_target", None):
+                out[self._target] = arr[:, -1] if arr.shape[1] > len(self._feature_cols) else pd.NA
         for c in self._columns:
             if c not in out.columns:
                 out[c] = pd.NA
@@ -344,7 +380,7 @@ class ForestDiffusionGenerator(BaseGenerator):
 
 
 # ---------------------------------------------------------------------------
-# TabDDPM — availability gated (full training pipeline is heavy)
+# TabDDPM — Kotelnikov et al. (ICML 2023), yandex-research/tab-ddpm
 # ---------------------------------------------------------------------------
 
 @register
@@ -353,16 +389,26 @@ class TabDDPMGenerator(BaseGenerator):
 
     @classmethod
     def is_available(cls) -> bool:
-        # Gated until the vendor training adapter is finished (Step 7).
-        return False
+        from .tabddpm_backend import is_tabddpm_available
+
+        return is_tabddpm_available()
 
     def fit(self, train_df: pd.DataFrame, metadata: Any) -> "TabDDPMGenerator":
-        # Full TabDDPM training requires the vendor scripts / configs.
-        # Provide a clear error until the dedicated adapter is finalized.
-        raise NotImplementedError(
-            "TabDDPM wrapper training is not fully wired yet. "
-            "Use vendor scripts under _vendor/tab-ddpm or wait for Step 7 completion."
-        )
+        from .tabddpm_backend import TabDDPMBackend
+
+        self._columns = list(train_df.columns)
+        self._discrete_levels = discrete_levels_from_train(train_df, metadata)
+        self._backend = TabDDPMBackend(self.params)
+        self._backend.fit(train_df, metadata)
+        self.is_fitted = True
+        return self
 
     def sample(self, n: int, seed: int | None = None) -> pd.DataFrame:
-        raise NotImplementedError("TabDDPM sample requires a fitted model.")
+        if not self.is_fitted:
+            raise RuntimeError("Call fit() before sample().")
+        out = self._backend.sample(n=int(n), seed=seed)
+        for c in self._columns:
+            if c not in out.columns:
+                out[c] = pd.NA
+        out = snap_discrete_columns(out, getattr(self, "_discrete_levels", {}))
+        return out[self._columns]

@@ -6,6 +6,6 @@ task=regression
 target=AH
 max_samples=1000
 drop_columns=[Date, Time]
-generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp
+generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp,forest_diffusion,tabddpm
 n_trials=20
 launch=start_air_quality_6gen.sh (detached via setsid on patten)

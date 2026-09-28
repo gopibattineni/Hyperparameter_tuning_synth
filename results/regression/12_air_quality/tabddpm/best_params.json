@@ -1,0 +1,12 @@
+{
+  "lr": 0.0019212959255386383,
+  "batch_size": 1024,
+  "num_timesteps": 1000,
+  "steps": 5000,
+  "n_layers": 2,
+  "d_layers": 256,
+  "sample_proportion": 1.0,
+  "dropout": 0.0,
+  "scheduler": "cosine",
+  "gaussian_loss_type": "mse"
+}

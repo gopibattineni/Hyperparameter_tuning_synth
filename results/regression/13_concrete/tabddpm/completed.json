@@ -1,0 +1,7 @@
+{
+  "dataset": "concrete",
+  "generator": "tabddpm",
+  "best_value": 0.5965278673190109,
+  "elapsed_sec": 561.6793773719692,
+  "status": "completed"
+}

@@ -2,8 +2,8 @@
 set -euo pipefail
 WORKDIR="/home/gopi.battineni/Hyperparameter_tuning_synth"
 DIR="${WORKDIR}/results/classification/9_magic_gamma"
-LOG="${DIR}/magic_gamma_6gen_run.log"
-PIDFILE="${DIR}/magic_gamma_6gen.pid"
+LOG="${DIR}/magic_gamma_8gen_run.log"
+PIDFILE="${DIR}/magic_gamma_8gen.pid"
 
 cd "$WORKDIR"
 mkdir -p "$DIR"
@@ -12,10 +12,10 @@ if [ -f config/generators/ctabgan_full.yaml ]; then
   cp config/generators/ctabgan_full.yaml config/generators/ctabgan.yaml
 fi
 
-echo "==== start $(date -Is) magic_gamma 6 generators (1000 balanced samples) ====" >> "$LOG"
+echo "==== start $(date -Is) magic_gamma 8 generators (1000 balanced samples) ====" >> "$LOG"
 python3 -u scripts/run_experiments.py \
   --datasets magic_gamma \
-  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp \
+  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp forest_diffusion tabddpm \
   --n-trials 20 \
   --resume \
   >> "$LOG" 2>&1

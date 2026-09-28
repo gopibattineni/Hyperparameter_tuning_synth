@@ -28,6 +28,195 @@ from .artifacts import mark_completed, mark_failed, run_dir, save_run_artifacts
 from .objective_fn import TrialObjective
 
 
+def study_storage_url(out_dir: Path) -> str:
+    """SQLite URL for a shared Optuna study under ``out_dir``."""
+    db = Path(out_dir) / "optuna.db"
+    # Absolute path so every worker resolves the same file
+    return f"sqlite:///{db.resolve()}"
+
+
+def _make_objective(
+    generator_name: str,
+    dataset_key: str,
+    *,
+    optuna_cfg: Mapping[str, Any],
+    objective_cfg: Mapping[str, Any],
+    generator_cls: Type[BaseGenerator] | None = None,
+):
+    cls = generator_cls or get_generator_class(generator_name)
+    if hasattr(cls, "is_available") and not cls.is_available():
+        raise RuntimeError(f"Generator {generator_name!r} dependencies are not available")
+    train_df, test_df, metadata = load_train_test(dataset_key)
+    gen_cfg = load_generator_config(generator_name)
+    objective = TrialObjective(
+        generator_cls=cls,
+        train_df=train_df,
+        test_df=test_df,
+        metadata=metadata,
+        generator_cfg=gen_cfg,
+        objective_cfg=objective_cfg,
+        seed=int(optuna_cfg.get("seed", 42)),
+    )
+    return objective, train_df, test_df, metadata, cls, gen_cfg
+
+
+def run_worker_trials(
+    generator_name: str,
+    dataset_key: str,
+    *,
+    n_trials: int,
+    storage: str,
+    study_name: str,
+    results_root: Path | str | None = None,
+    optuna_cfg: Mapping[str, Any] | None = None,
+    objective_cfg: Mapping[str, Any] | None = None,
+) -> None:
+    """Contribute ``n_trials`` to a shared Optuna study (one GPU process)."""
+    optuna_cfg = dict(optuna_cfg or load_config("optuna"))
+    objective_cfg = dict(objective_cfg or load_config("objective"))
+    objective, *_rest = _make_objective(
+        generator_name, dataset_key, optuna_cfg=optuna_cfg, objective_cfg=objective_cfg
+    )
+    study = optuna.create_study(
+        study_name=study_name,
+        storage=storage,
+        load_if_exists=True,
+        direction=str(objective_cfg.get("direction", "maximize")),
+        sampler=_build_sampler(optuna_cfg),
+        pruner=_build_pruner(optuna_cfg),
+    )
+    study.optimize(objective, n_trials=int(n_trials), show_progress_bar=False)
+
+
+def finalize_study_from_storage(
+    generator_name: str,
+    dataset_key: str,
+    *,
+    storage: str,
+    study_name: str,
+    results_root: Path | str | None = None,
+    optuna_cfg: Mapping[str, Any] | None = None,
+    objective_cfg: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Load a shared study, refit best params, and write run artifacts."""
+    t0 = time.perf_counter()
+    optuna_cfg = dict(optuna_cfg or load_config("optuna"))
+    objective_cfg = dict(objective_cfg or load_config("objective"))
+    objective, train_df, test_df, metadata, cls, gen_cfg = _make_objective(
+        generator_name, dataset_key, optuna_cfg=optuna_cfg, objective_cfg=objective_cfg
+    )
+    del objective  # unused here
+
+    from config_utils import PACKAGE_ROOT
+
+    root = Path(results_root) if results_root else PACKAGE_ROOT / "results"
+    out = run_dir(root, dataset_key, generator_name, task=getattr(metadata, "task", None))
+    out.mkdir(parents=True, exist_ok=True)
+
+    study = optuna.load_study(study_name=study_name, storage=storage)
+    complete = [t for t in study.trials if t.state == optuna.trial.TrialState.COMPLETE]
+    if not complete:
+        elapsed = time.perf_counter() - t0
+        mark_failed(
+            out,
+            dataset=dataset_key,
+            generator=generator_name,
+            error="No trials are completed yet.",
+            elapsed_sec=elapsed,
+        )
+        return {
+            "dataset": dataset_key,
+            "generator": generator_name,
+            "status": "failed",
+            "best_value": None,
+            "elapsed_sec": elapsed,
+            "n_trials": len(study.trials),
+            "run_dir": str(out),
+            "error": "No trials are completed yet.",
+        }
+
+    try:
+        from .search_space import defaults_from_yaml, restore_optuna_params
+
+        best_params = dict(study.best_params)
+        full_params = defaults_from_yaml(gen_cfg)
+        full_params.update(restore_optuna_params(best_params))
+
+        best_gen = cls.from_params(full_params)
+        best_gen.fit(train_df, metadata)
+        synthetic = best_gen.sample(n=len(train_df), seed=int(optuna_cfg.get("seed", 42)))
+        for col in train_df.columns:
+            if col not in synthetic.columns:
+                synthetic[col] = pd.NA
+        synthetic = synthetic[train_df.columns]
+
+        fidelity = evaluate_fidelity(train_df, synthetic, metadata, objective_cfg)
+        privacy = evaluate_privacy(train_df, synthetic, metadata, objective_cfg)
+        utility = evaluate_utility(train_df, synthetic, test_df, metadata, objective_cfg)
+        combined = compute_objective(fidelity, privacy, utility, objective_cfg)
+
+        elapsed = time.perf_counter() - t0
+        timing = {
+            "elapsed_sec": elapsed,
+            "n_trials": len(study.trials),
+            "n_complete": len(complete),
+        }
+        art_cfg = optuna_cfg.get("artifact") or {}
+        save_run_artifacts(
+            study,
+            out,
+            best_params=full_params,
+            metrics={**fidelity, **privacy, **utility, **combined},
+            synthetic=synthetic,
+            timing=timing,
+            config_snapshot={
+                "optuna": CONFIG_ROOT / "optuna.yaml",
+                "objective": CONFIG_ROOT / "objective.yaml",
+                "generator": CONFIG_ROOT / "generators" / f"{generator_name}.yaml",
+            }
+            if art_cfg.get("snapshot_configs", True)
+            else None,
+            save_plots=list(art_cfg.get("save_plots") or []),
+            save_study_pickle=bool(art_cfg.get("save_study_pickle", True)),
+        )
+        mark_completed(
+            out,
+            dataset=dataset_key,
+            generator=generator_name,
+            best_value=float(study.best_value),
+            elapsed_sec=elapsed,
+        )
+        return {
+            "dataset": dataset_key,
+            "generator": generator_name,
+            "status": "completed",
+            "best_value": float(study.best_value),
+            "elapsed_sec": elapsed,
+            "n_trials": len(study.trials),
+            "run_dir": str(out),
+            "error": None,
+        }
+    except Exception as exc:
+        elapsed = time.perf_counter() - t0
+        mark_failed(
+            out,
+            dataset=dataset_key,
+            generator=generator_name,
+            error=str(exc),
+            elapsed_sec=elapsed,
+        )
+        return {
+            "dataset": dataset_key,
+            "generator": generator_name,
+            "status": "failed",
+            "best_value": None,
+            "elapsed_sec": elapsed,
+            "n_trials": len(study.trials),
+            "run_dir": str(out),
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+
+
 def _build_sampler(cfg: Mapping[str, Any]):
     name = str((cfg.get("sampler") or {}).get("name", "TPESampler"))
     seed = int((cfg.get("sampler") or {}).get("seed", cfg.get("seed", 42)))

@@ -1,0 +1,7 @@
+{
+  "dataset": "wine_quality",
+  "generator": "tabddpm",
+  "best_value": 0.6492222527851066,
+  "elapsed_sec": 1933.7336145230001,
+  "status": "completed"
+}

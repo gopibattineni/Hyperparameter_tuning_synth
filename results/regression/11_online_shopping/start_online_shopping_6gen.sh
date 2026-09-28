@@ -3,7 +3,7 @@ set -euo pipefail
 WORKDIR="/home/gopi.battineni/Hyperparameter_tuning_synth"
 DIR="${WORKDIR}/results/regression/11_online_shopping"
 LOG="${DIR}/online_shopping_6gen_fair_rerun.log"
-PIDFILE="${DIR}/online_shopping_6gen.pid"
+PIDFILE="${DIR}/online_shopping_8gen.pid"
 
 cd "$WORKDIR"
 mkdir -p "$DIR"
@@ -15,7 +15,7 @@ fi
 echo "==== start $(date -Is) online_shopping FULL 6-gen fair rerun (drop session ID + page 2; discrete day/order) ====" >> "$LOG"
 python3 -u scripts/run_experiments.py \
   --datasets online_shopping \
-  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp \
+  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp forest_diffusion tabddpm \
   --n-trials 20 \
   --no-resume \
   >> "$LOG" 2>&1

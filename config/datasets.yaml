@@ -77,6 +77,11 @@ datasets:
     target: Cover_Type
     test_size: 0.2
     seed: 42
+    # Soil/wilderness one-hots are binary ints. Treating ~40 of them as
+    # categorical makes CTAB-GAN+ rejection sampling hang and return empty.
+    # Only the multi-class target is categorical for synth models.
+    max_int_categories: 0
+    categorical_columns: [Cover_Type]
 
   bank_marketing:
     display_name: "5. Bank Marketing"

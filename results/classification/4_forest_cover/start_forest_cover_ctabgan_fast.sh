@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
-WORKDIR="/home/gopi.battineni/Hyperparameter_tuning_synth"
-DIR="${WORKDIR}/results/classification/4_forest_cover"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKDIR="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+DIR="${SCRIPT_DIR}"
 LOG="${DIR}/ctabgan_fast_run.log"
+PYTHON="${SYNTH_PYTHON:-/home/gopi_b/SYNTH_BENCHMARK/.venv/bin/python}"
+export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
+export SYNTH_REPO_ROOT="${SYNTH_REPO_ROOT:-/home/gopi_b/SYNTH_BENCHMARK}"
 cd "$WORKDIR"
 cp config/generators/ctabgan_fast.yaml config/generators/ctabgan.yaml
 echo "==== start $(date -Is) forest_cover × ctabgan FAST (10 trials) NEW discrete encoding ====" >> "$LOG"
-python3 -u scripts/run_experiments.py \
+"$PYTHON" -u scripts/run_experiments.py \
   --datasets forest_cover \
   --generators ctabgan \
   --n-trials 10 \

@@ -1,0 +1,7 @@
+{
+  "dataset": "forest_cover",
+  "generator": "tabddpm",
+  "best_value": 0.3880091883213308,
+  "elapsed_sec": 556.7546120120005,
+  "status": "completed"
+}

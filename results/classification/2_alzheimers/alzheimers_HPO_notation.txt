@@ -1,233 +1,148 @@
 ================================================================================
-   ALZHEIMERS DATASET — HYPERPARAMETER TUNING RESULTS (Notation File)
+      ALZHEIMERS — HYPERPARAMETER TUNING RESULTS (Notation File)
 ================================================================================
-Dataset: Alzheimers (OASIS-style)
-Task: Binary Classification (Group: Demented/Converted=1, Nondemented=0)
-Train size: 283 | Test size: 71 | Features: 11
+Dataset: 2. Alzhimers
+Task: Classification (Group)
 Tuning Framework: Optuna (TPE Sampler, MedianPruner)
-Trials per Generator: 20
-Objective: MAXIMIZE  0.4 × Fidelity + 0.4 × Utility − 0.2 × Privacy Risk
-Utility classifiers: Logistic Regression, Random Forest, Decision Tree
+Train/Test sizes after sampling+split: 298 / 75
+Objective (report ranking): MAXIMIZE  0.4×Fidelity + 0.4×Utility(Acc) − 0.2×PrivacyRisk
+Note: Optuna search used its own utility; report utility is recomputed as above.
+
+SCOPE: 7 of 7 generators in this workbook
+  Included: TVAE, WGAN-GP, CTGAN, GaussianCopula, TabDDPM, CTAB-GAN+, CopulaGAN
 
 ================================================================================
-                         OBJECTIVE FORMULA
+                RESULTS RANKED BY Acc OBJECTIVE (Best → Worst)
 ================================================================================
 
-  Objective = 0.4 × F + 0.4 × U − 0.2 × P
-
-  F (Fidelity)     = avg(KS_Similarity, Correlation_Similarity)
-  U (Utility)      = 1 − clip(mean_f1_gap, 0, 1)   [TSTR vs TRTR]
-  P (Privacy Risk) = composite of MIA_AUC, NNDR
-
-  TRTR baseline accuracy (mean of 3 clfs): 0.9484
-    LogReg=0.9437  RF=0.9437  DT=0.9577
-
-================================================================================
-                RESULTS RANKED BY OBJECTIVE (Best → Worst)
-================================================================================
-
-#1  TVAE                         Objective: 0.6337
-    ────────────────────────────────────────────────────────────
+#1  TVAE                         Objective(Acc): 0.6339
+    ─────────────────────────────────────────────────
     Fidelity:      0.9264    |  KS Sim: 0.9207   Corr Sim: 0.9322
-    Utility:       0.9711    |  TSTR F1: 0.9122   TRTR F1: 0.9411
+    Utility(Acc):  0.9718    |  TSTR: 0.9202   TRTR: 0.9484
     Privacy Risk:  0.6268    |  MIA AUC: 0.7859   NNDR: 0.8872
-    Accuracy:      TSTR=0.9202  TRTR=0.9484  Gap=0.0282
-                   LogReg=0.9437  RF=0.9437  DT=0.8732
-    Time: 205s (3.4 min)
+    Time: 205s (3.4 min)  |  HPO trials: 20
+    Reference HPO objective: 0.6524
 
     Best Hyperparameters:
-      epochs               = 900
-      batch_size           = 1000
-      embedding_dim        = 32
-      compress_dims        = [128, 128, 128]
-      decompress_dims      = [256, 256]
-      l2scale              = 3.11137e-06
-      loss_factor          = 2
+      epochs              = 900
+      batch_size          = 1000
+      embedding_dim       = 32
+      compress_dims       = [128, 128, 128]
+      decompress_dims     = [256, 256]
+      l2scale             = 3.1113743087510454e-06
+      loss_factor         = 2
 
-    Search Space:
-      epochs            int    [100, 1000] step=50     (default: 300)
-      batch_size        cat    {100, 200, 500, 1000}    (default: 500)
-      embedding_dim     cat    {32, 64, 128, 256}       (default: 128)
-      compress_dims     cat    {[64,64], [128,128], [256,256], [128,128,128]}
-      decompress_dims   cat    {[64,64], [128,128], [256,256], [128,128,128]}
-      l2scale           float  [1e-6, 1e-3] log         (default: 1e-5)
-      loss_factor       cat    {1, 2, 5, 10}            (default: 2)
-
-
-#2  GAUSSIAN_COPULA              Objective: 0.5938
-    ────────────────────────────────────────────────────────────
-    Fidelity:      0.8760    |  KS Sim: 0.8603   Corr Sim: 0.8918
-    Utility:       0.9633    |  TSTR F1: 0.9044   TRTR F1: 0.9411
-    Privacy Risk:  0.7098    |  MIA AUC: 0.9727   NNDR: 0.9217
-    Accuracy:      TSTR=0.9108  TRTR=0.9484  Gap=0.0376
-                   LogReg=0.9437  RF=0.9296  DT=0.8592
-    Time: 19s (0.3 min)
-
-    Best Hyperparameters:
-      default_distribution = gamma
-      enforce_min_max_values = True
-
-    Search Space:
-      default_distribution  cat  {beta, truncnorm, norm, gamma, uniform}
-      enforce_min_max_values cat  {true, false}
-
-
-#3  CTGAN                        Objective: 0.5918
-    ────────────────────────────────────────────────────────────
-    Fidelity:      0.8837    |  KS Sim: 0.8236   Corr Sim: 0.9437
-    Utility:       0.9479    |  TSTR F1: 0.8890   TRTR F1: 0.9411
-    Privacy Risk:  0.7041    |  MIA AUC: 0.9517   NNDR: 0.9060
-    Accuracy:      TSTR=0.9061  TRTR=0.9484  Gap=0.0423
-                   LogReg=0.9437  RF=0.9296  DT=0.8451
-    Time: 1674s (27.9 min)
-
-    Best Hyperparameters:
-      epochs               = 850
-      batch_size           = 1000
-      generator_lr         = 0.000232972
-      discriminator_lr     = 0.000761813
-      generator_dim        = [256, 256, 256]
-      discriminator_dim    = [512, 512]
-      discriminator_steps  = 2
-      pac                  = 1
-
-    Search Space:
-      epochs            int    [100, 1000] step=50      (default: 300)
-      batch_size        cat    {100, 200, 500, 1000}     (default: 500)
-      generator_lr      float  [1e-5, 1e-3] log          (default: 2e-4)
-      discriminator_lr  float  [1e-5, 1e-3] log          (default: 2e-4)
-      generator_dim     cat    {[128,128], [256,256], [256,256,256], [512,512]}
-      discriminator_dim cat    {[128,128], [256,256], [256,256,256], [512,512]}
-      discriminator_steps int  [1, 5]                    (default: 1)
-      pac               cat    {1, 5, 10}                (default: 10)
-
-
-#4  CTABGAN                      Objective: 0.5286
-    ────────────────────────────────────────────────────────────
-    Fidelity:      0.7845    |  KS Sim: 0.7060   Corr Sim: 0.8630
-    Utility:       0.8971    |  TSTR F1: 0.8382   TRTR F1: 0.9411
-    Privacy Risk:  0.7205    |  MIA AUC: 0.9986   NNDR: 0.9294
-    Accuracy:      TSTR=0.8404  TRTR=0.9484  Gap=0.1080
-                   LogReg=0.7465  RF=0.9296  DT=0.8451
-    Time: 1011s (16.8 min)
-
-    Best Hyperparameters:
-      epochs               = 300
-      batch_size           = 500
-      random_dim           = 100
-      num_channels         = 64
-      class_dim            = [512, 512, 512]
-      l2scale              = 3.8841e-05
-
-    Search Space:
-      epochs            int    [100, 300] step=25       (default: 150)
-      batch_size        cat    {50, 100, 500}            (default: 500)
-      random_dim        cat    {50, 100, 150}            (default: 100)
-      num_channels      cat    {32, 64, 128}             (default: 64)
-      class_dim         cat    {[128,128,128], [256,256,256,256], [512,512,512]}
-      l2scale           float  [1e-6, 1e-4] log          (default: 1e-5)
-
-
-#5  COPULAGAN                    Objective: 0.4891
-    ────────────────────────────────────────────────────────────
-    Fidelity:      0.8332    |  KS Sim: 0.8452   Corr Sim: 0.8211
-    Utility:       0.7327    |  TSTR F1: 0.6739   TRTR F1: 0.9411
-    Privacy Risk:  0.6862    |  MIA AUC: 0.9403   NNDR: 0.9466
-    Accuracy:      TSTR=0.7512  TRTR=0.9484  Gap=0.1972
-                   LogReg=0.7042  RF=0.8732  DT=0.6761
-    Time: 611s (10.2 min)
-
-    Best Hyperparameters:
-      epochs               = 700
-      batch_size           = 200
-      generator_lr         = 0.000337295
-      discriminator_lr     = 0.000347991
-      generator_dim        = [256, 256, 256]
-      discriminator_dim    = [256, 256]
-      discriminator_steps  = 1
-      pac                  = 10
-      default_distribution = gamma
-
-    Search Space:
-      epochs            int    [100, 800] step=50       (default: 300)
-      batch_size        cat    {100, 200, 500}           (default: 500)
-      generator_lr      float  [1e-5, 1e-3] log          (default: 2e-4)
-      discriminator_lr  float  [1e-5, 1e-3] log          (default: 2e-4)
-      generator_dim     cat    {[128,128], [256,256], [256,256,256]}
-      discriminator_dim cat    {[128,128], [256,256], [256,256,256]}
-      pac               cat    {1, 5, 10}                (default: 10)
-      default_distribution cat {beta, truncnorm, norm, gamma}
-
-
-#6  FOREST_DIFFUSION             Objective: 0.2379
-    ────────────────────────────────────────────────────────────
-    Fidelity:      0.9050    |  KS Sim: 0.8468   Corr Sim: 0.9631
-    Utility:       0.0589    |  TSTR F1: 0.0000   TRTR F1: 0.9411
-    Privacy Risk:  0.7382    |  MIA AUC: 0.9893   NNDR: 0.8549
-    Accuracy:      TSTR=0.0000  TRTR=0.9484  Gap=0.9484
-                   LogReg=0.0000  RF=0.0000  DT=0.0000
-    Time: 2185s (36.4 min)
-
-    Best Hyperparameters:
-      n_t                  = 100
-      duplicate_K          = 100
-      diffusion_type       = flow
-      max_depth            = 3
-      n_estimators         = 200
-      eta                  = 0.404236
-
-    Search Space:
-      n_t             int    [20, 100] step=10          (default: 50)
-      duplicate_K     cat    {50, 75, 100, 150}          (default: 100)
-      diffusion_type  cat    {vp, flow}                  (default: vp)
-      max_depth       int    [3, 10]                     (default: 7)
-      n_estimators    cat    {50, 100, 200}              (default: 100)
-      eta             float  [0.05, 0.5] log             (default: 0.3)
-
-
-#7  WGAN_GP                      Objective: 0.2226
-    ────────────────────────────────────────────────────────────
+#2  WGAN-GP                      Objective(Acc): 0.5972
+    ─────────────────────────────────────────────────
     Fidelity:      0.8625    |  KS Sim: 0.7809   Corr Sim: 0.9441
-    Utility:       0.0589    |  TSTR F1: 0.0000   TRTR F1: 0.9411
+    Utility(Acc):  0.9953    |  TSTR: 0.9437   TRTR: 0.9484
     Privacy Risk:  0.7298    |  MIA AUC: 1.0000   NNDR: 0.9008
-    Accuracy:      TSTR=0.0000  TRTR=0.9484  Gap=0.9484
-                   LogReg=0.0000  RF=0.0000  DT=0.0000
-    Time: 406s (6.8 min)
+    Time: 406s (6.8 min)  |  HPO trials: 20
+    Reference HPO objective: 0.2333
 
     Best Hyperparameters:
-      epochs               = 1300
-      batch_size           = 64
-      latent_dim           = 128
-      hidden_dim           = 128
-      lr                   = 0.00025944
-      n_critic             = 6
-      lambda_gp            = 7.27848
+      epochs              = 1300
+      batch_size          = 64
+      latent_dim          = 128
+      hidden_dim          = 128
+      lr                  = 0.00025944044444662625
+      n_critic            = 6
+      lambda_gp           = 7.27847593638622
 
-    Search Space:
-      epochs          int    [200, 2000] step=100       (default: 500)
-      batch_size      cat    {32, 64, 128, 256}          (default: 64)
-      latent_dim      cat    {32, 64, 128}               (default: 64)
-      hidden_dim      cat    {64, 128, 256}              (default: 128)
-      lr              float  [1e-5, 5e-4] log            (default: 1e-4)
-      n_critic        int    [1, 10]                     (default: 5)
-      lambda_gp       float  [1.0, 20.0]                (default: 10.0)
+#3  CTGAN                        Objective(Acc): 0.5939
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8837    |  KS Sim: 0.8236   Corr Sim: 0.9437
+    Utility(Acc):  0.9530    |  TSTR: 0.9014   TRTR: 0.9484
+    Privacy Risk:  0.7041    |  MIA AUC: 0.9517   NNDR: 0.9060
+    Time: 1674s (27.9 min)  |  HPO trials: 20
+    Reference HPO objective: 0.6278
 
+    Best Hyperparameters:
+      epochs              = 850
+      batch_size          = 1000
+      generator_lr        = 0.00023297151777717693
+      discriminator_lr    = 0.0007618131306928441
+      generator_dim       = [256, 256, 256]
+      discriminator_dim   = [512, 512]
+      discriminator_steps = 2
+      pac                 = 1
 
-================================================================================
-                        SKIPPED GENERATORS
-================================================================================
+#4  GaussianCopula               Objective(Acc): 0.5915
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8760    |  KS Sim: 0.8603   Corr Sim: 0.8918
+    Utility(Acc):  0.9577    |  TSTR: 0.9061   TRTR: 0.9484
+    Privacy Risk:  0.7098    |  MIA AUC: 0.9727   NNDR: 0.9217
+    Time: 19s (0.3 min)  |  HPO trials: 20
+    Reference HPO objective: 0.5938
 
-  TabDDPM: Dependencies not installed (libzero/rtdl). Skipped automatically.
+    Best Hyperparameters:
+      default_distribution= gamma
+      enforce_min_max_values= True
+
+#5  TabDDPM                      Objective(Acc): 0.5615
+    ─────────────────────────────────────────────────
+    Fidelity:      0.7887    |  KS Sim: 0.7532   Corr Sim: 0.8241
+    Utility(Acc):  0.9333    |  TSTR: 0.8667   TRTR: 0.9333
+    Privacy Risk:  0.6366    |  MIA AUC: 0.8265   NNDR: 0.9221
+    Time: 1060s (17.7 min)  |  HPO trials: 10
+    Reference HPO objective: 0.5522
+
+    Best Hyperparameters:
+      batch_size          = 1024
+      lr                  = 0.0019212959255386383
+      num_timesteps       = 1000
+      steps               = 5000
+      n_layers            = 2
+      d_layers            = 256
+      sample_proportion   = 1.0
+      dropout             = 0.0
+      scheduler           = cosine
+      gaussian_loss_type  = mse
+
+#6  CTAB-GAN+                    Objective(Acc): 0.5228
+    ─────────────────────────────────────────────────
+    Fidelity:      0.7845    |  KS Sim: 0.7060   Corr Sim: 0.8630
+    Utility(Acc):  0.8826    |  TSTR: 0.8310   TRTR: 0.9484
+    Privacy Risk:  0.7205    |  MIA AUC: 0.9986   NNDR: 0.9294
+    Time: 1011s (16.8 min)  |  HPO trials: 20
+    Reference HPO objective: 0.5617
+
+    Best Hyperparameters:
+      epochs              = 300
+      batch_size          = 500
+      l2scale             = 3.8841029111263716e-05
+      random_dim          = 100
+      num_channels        = 64
+      class_dim           = [512, 512, 512]
+
+#7  CopulaGAN                    Objective(Acc): 0.5153
+    ─────────────────────────────────────────────────
+    Fidelity:      0.8332    |  KS Sim: 0.8452   Corr Sim: 0.8211
+    Utility(Acc):  0.7981    |  TSTR: 0.7465   TRTR: 0.9484
+    Privacy Risk:  0.6862    |  MIA AUC: 0.9403   NNDR: 0.9466
+    Time: 611s (10.2 min)  |  HPO trials: 20
+    Reference HPO objective: 0.5685
+
+    Best Hyperparameters:
+      epochs              = 700
+      batch_size          = 200
+      generator_lr        = 0.00033729496029479456
+      discriminator_lr    = 0.0003479905481396287
+      generator_dim       = [256, 256, 256]
+      discriminator_dim   = [256, 256]
+      discriminator_steps = 1
+      pac                 = 10
+      default_distribution= gamma
 
 ================================================================================
                         KEY OBSERVATIONS
 ================================================================================
 
-  1. Best generator by objective: TVAE (0.6337)
-  2. Best TSTR accuracy: tvae (0.9202)
-  3. Same Optuna objective and search spaces as cancer report.
-  4. Small dataset (283 train rows) → trials much faster than adult.
+  1. Winner by Acc objective: TVAE (0.6339).
+  2. Top fidelity: TVAE (0.9264).
+  3. Best Acc utility: WGAN-GP (0.9953).
+  4. Lowest privacy risk: TVAE (0.6268).
 
 ================================================================================
-  Generated: 2026-08-20 | Framework: Optuna TPE | Dataset: alzheimers
+  Generated: 2026-09-28 | Framework: Optuna TPE | Dataset: alzheimers | Generators: 7
 ================================================================================

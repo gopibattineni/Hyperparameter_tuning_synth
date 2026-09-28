@@ -2,8 +2,8 @@
 set -euo pipefail
 WORKDIR="/home/gopi.battineni/Hyperparameter_tuning_synth"
 DIR="${WORKDIR}/results/classification/8_mushroom"
-LOG="${DIR}/mushroom_6gen_run.log"
-PIDFILE="${DIR}/mushroom_6gen.pid"
+LOG="${DIR}/mushroom_8gen_run.log"
+PIDFILE="${DIR}/mushroom_8gen.pid"
 
 cd "$WORKDIR"
 mkdir -p "$DIR"
@@ -12,10 +12,10 @@ if [ -f config/generators/ctabgan_full.yaml ]; then
   cp config/generators/ctabgan_full.yaml config/generators/ctabgan.yaml
 fi
 
-echo "==== start $(date -Is) mushroom 6 generators (1000 balanced samples) ====" >> "$LOG"
+echo "==== start $(date -Is) mushroom 8 generators (1000 balanced samples) ====" >> "$LOG"
 python3 -u scripts/run_experiments.py \
   --datasets mushroom \
-  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp \
+  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp forest_diffusion tabddpm \
   --n-trials 20 \
   --resume \
   >> "$LOG" 2>&1

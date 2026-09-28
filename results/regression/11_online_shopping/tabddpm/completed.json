@@ -1,0 +1,7 @@
+{
+  "dataset": "online_shopping",
+  "generator": "tabddpm",
+  "best_value": 0.226604437016168,
+  "elapsed_sec": 637.2103225850151,
+  "status": "completed"
+}

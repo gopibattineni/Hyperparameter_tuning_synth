@@ -1,0 +1,7 @@
+{
+  "dataset": "metro_interstate",
+  "generator": "tabddpm",
+  "best_value": 0.6022344776192881,
+  "elapsed_sec": 514.1086343939533,
+  "status": "completed"
+}

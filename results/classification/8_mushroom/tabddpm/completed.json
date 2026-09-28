@@ -1,0 +1,7 @@
+{
+  "dataset": "mushroom",
+  "generator": "tabddpm",
+  "best_value": 0.43169576149179967,
+  "elapsed_sec": 670.7677183809574,
+  "status": "completed"
+}

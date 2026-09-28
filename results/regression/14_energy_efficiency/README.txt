@@ -5,6 +5,6 @@ phase=phase2_regression
 task=regression
 target=Y1
 max_samples=1000
-generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp
+generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp,forest_diffusion,tabddpm
 n_trials=20
 launch=start_energy_efficiency_6gen.sh (detached via setsid on patten)

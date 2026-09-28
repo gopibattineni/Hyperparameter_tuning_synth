@@ -1,0 +1,7 @@
+{
+  "dataset": "magic_gamma",
+  "generator": "tabddpm",
+  "best_value": 0.6720858916175214,
+  "elapsed_sec": 1093.8800086049996,
+  "status": "completed"
+}

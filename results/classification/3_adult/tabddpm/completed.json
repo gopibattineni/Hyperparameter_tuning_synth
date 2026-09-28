@@ -1,0 +1,7 @@
+{
+  "dataset": "adult",
+  "generator": "tabddpm",
+  "best_value": 0.5045256152468071,
+  "elapsed_sec": 1151.7130123079987,
+  "status": "completed"
+}

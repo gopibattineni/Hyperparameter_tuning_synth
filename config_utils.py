@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any
 
@@ -16,8 +17,43 @@ except ImportError as exc:  # pragma: no cover
 # hyper parameter tuning/ package root
 PACKAGE_ROOT = Path(__file__).resolve().parent
 CONFIG_ROOT = PACKAGE_ROOT / "config"
-# Benchmark data / generators / vendor live under SYNTH_BENCHMARK/SYNTH
-REPO_ROOT = Path("/home/gopi.battineni/SYNTH_BENCHMARK/SYNTH")
+
+
+def _looks_like_synth_root(path: Path) -> bool:
+    return (
+        (path / "_vendor" / "tab-ddpm" / "CTAB-GAN-Plus" / "model" / "ctabgan.py").is_file()
+        or (path / "Generators" / "Other GANS" / "CTAB-GAN-Plus" / "model" / "ctabgan.py").is_file()
+        or (path / "Datasets").is_dir()
+    )
+
+
+def _resolve_repo_root() -> Path:
+    """Locate SYNTH_BENCHMARK (vendor generators + local CSVs).
+
+    Prefers ``SYNTH_REPO_ROOT``, then this machine, then the original
+    ``gopi.battineni`` layout so scripts work after a home-directory move.
+    """
+    env = os.environ.get("SYNTH_REPO_ROOT")
+    if env:
+        env_path = Path(env).expanduser()
+        if env_path.is_dir():
+            return env_path
+
+    candidates = [
+        Path("/home/gopi_b/SYNTH_BENCHMARK"),
+        Path("/home/gopi.battineni/SYNTH_BENCHMARK/SYNTH"),
+        Path("/home/gopi.battineni/SYNTH_BENCHMARK"),
+        PACKAGE_ROOT.parent / "SYNTH_BENCHMARK",
+        PACKAGE_ROOT.parent / "SYNTH",
+    ]
+    for candidate in candidates:
+        if candidate.is_dir() and _looks_like_synth_root(candidate):
+            return candidate
+    return candidates[0]
+
+
+# Benchmark data / generators / vendor live under SYNTH_BENCHMARK
+REPO_ROOT = _resolve_repo_root()
 
 
 def load_yaml(path: Path | str) -> dict[str, Any]:

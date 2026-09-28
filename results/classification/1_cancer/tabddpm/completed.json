@@ -1,0 +1,7 @@
+{
+  "dataset": "cancer",
+  "generator": "tabddpm",
+  "best_value": 0.5500366495689029,
+  "elapsed_sec": 1126.3018805110005,
+  "status": "completed"
+}

@@ -1,0 +1,7 @@
+{
+  "dataset": "forest_cover",
+  "generator": "ctabgan",
+  "best_value": 0.4433200342793723,
+  "elapsed_sec": 892.8643757110112,
+  "status": "completed"
+}

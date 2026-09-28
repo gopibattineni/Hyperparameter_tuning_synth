@@ -1,0 +1,7 @@
+{
+  "dataset": "energy_efficiency",
+  "generator": "tabddpm",
+  "best_value": 0.61056746673799,
+  "elapsed_sec": 436.8058129529818,
+  "status": "completed"
+}

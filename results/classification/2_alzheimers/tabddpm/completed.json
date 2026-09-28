@@ -1,0 +1,7 @@
+{
+  "dataset": "alzheimers",
+  "generator": "tabddpm",
+  "best_value": 0.5522299728952453,
+  "elapsed_sec": 1059.8143484230004,
+  "status": "completed"
+}

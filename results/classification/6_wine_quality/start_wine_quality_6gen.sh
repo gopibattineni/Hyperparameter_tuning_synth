@@ -2,8 +2,8 @@
 set -euo pipefail
 WORKDIR="/home/gopi.battineni/Hyperparameter_tuning_synth"
 DIR="${WORKDIR}/results/classification/6_wine_quality"
-LOG="${DIR}/wine_quality_6gen_run.log"
-PIDFILE="${DIR}/wine_quality_6gen.pid"
+LOG="${DIR}/wine_quality_8gen_run.log"
+PIDFILE="${DIR}/wine_quality_8gen.pid"
 
 cd "$WORKDIR"
 mkdir -p "$DIR"
@@ -12,10 +12,10 @@ if [ -f config/generators/ctabgan_full.yaml ]; then
   cp config/generators/ctabgan_full.yaml config/generators/ctabgan.yaml
 fi
 
-echo "==== start $(date -Is) wine_quality 6 generators (1000 balanced samples) ====" >> "$LOG"
+echo "==== start $(date -Is) wine_quality 8 generators (1000 balanced samples) ====" >> "$LOG"
 python3 -u scripts/run_experiments.py \
   --datasets wine_quality \
-  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp \
+  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp forest_diffusion tabddpm \
   --n-trials 20 \
   --resume \
   >> "$LOG" 2>&1

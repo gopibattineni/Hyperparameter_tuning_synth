@@ -1,30 +1,47 @@
 ================================================================================
       REAL ESTATE — HYPERPARAMETER TUNING RESULTS (Notation File)
 ================================================================================
-Dataset: Real Estate
+Dataset: 15. Real Estate
 Task: Regression (Y house price of unit area)
 Tuning Framework: Optuna (TPE Sampler, MedianPruner)
-Trials per Generator: 20
-Sampling: max_samples=1000, seed=42 (random subsample for regression)
-Train/Test sizes after sampling+split: 800 / 200
-Preprocessing: impute (median/mode) + categorical label-encoding (train-fitted)
+Train/Test sizes after sampling+split: 331 / 83
 Objective (report ranking): MAXIMIZE  0.4×Fidelity + 0.4×Utility(R²) − 0.2×PrivacyRisk
+Note: Optuna search used its own utility; report utility is recomputed as above.
 
-SCOPE: COMPLETE with 6 generators
-  Included: GaussianCopula, CopulaGAN, CTGAN, TVAE, CTAB-GAN+, WGAN-GP
-  Excluded: ForestDiffusion, TabDDPM
+SCOPE: 7 of 7 generators in this workbook
+  Included: TabDDPM, WGAN-GP, CTAB-GAN+, TVAE, GaussianCopula, CTGAN, CopulaGAN
 
 ================================================================================
                 RESULTS RANKED BY R² OBJECTIVE (Best → Worst)
 ================================================================================
 
-#1  WGAN-GP                      Objective(R²): 0.6058
+#1  TabDDPM                      Objective(R²): 0.6375
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9273    |  KS Sim: 0.9406   Corr Sim: 0.9140
+    Utility(R²):  0.9651    |  TSTR: -0.3404   TRTR: -0.3055
+    Privacy Risk:  0.5972    |  MIA AUC: 0.7591   NNDR: 0.9411
+    Time: 407s (6.8 min)  |  HPO trials: 10
+    Reference HPO objective: 0.5931
+
+    Best Hyperparameters:
+      batch_size          = 1024
+      lr                  = 0.0019212959255386383
+      num_timesteps       = 1000
+      steps               = 5000
+      n_layers            = 2
+      d_layers            = 256
+      sample_proportion   = 1.0
+      dropout             = 0.0
+      scheduler           = cosine
+      gaussian_loss_type  = mse
+
+#2  WGAN-GP                      Objective(R²): 0.6058
     ─────────────────────────────────────────────────
     Fidelity:      0.9126    |  KS Sim: 0.8776   Corr Sim: 0.9475
-    Utility(R²):   0.9326    |  TSTR R²: -0.3729   TRTR R²: -0.3055
+    Utility(R²):  0.9326    |  TSTR: -0.3729   TRTR: -0.3055
     Privacy Risk:  0.6614    |  MIA AUC: 0.8945   NNDR: 0.9527
-    Time: 367s (6.1 min)
-    Reference HPO objective: 0.6485  |  Utility(HPO): 0.8829
+    Time: 367s (6.1 min)  |  HPO trials: 20
+    Reference HPO objective: 0.6485
 
     Best Hyperparameters:
       epochs              = 1000
@@ -35,13 +52,13 @@ SCOPE: COMPLETE with 6 generators
       n_critic            = 8
       lambda_gp           = 5.315641221366691
 
-#2  CTAB-GAN+                    Objective(R²): 0.5627
+#3  CTAB-GAN+                    Objective(R²): 0.5627
     ─────────────────────────────────────────────────
     Fidelity:      0.7938    |  KS Sim: 0.8036   Corr Sim: 0.7839
-    Utility(R²):   0.9571    |  TSTR R²: -0.3484   TRTR R²: -0.3055
+    Utility(R²):  0.9571    |  TSTR: -0.3484   TRTR: -0.3055
     Privacy Risk:  0.6884    |  MIA AUC: 0.9613   NNDR: 0.9742
-    Time: 546s (9.1 min)
-    Reference HPO objective: 0.6130  |  Utility(HPO): 1.0000
+    Time: 546s (9.1 min)  |  HPO trials: 20
+    Reference HPO objective: 0.6130
 
     Best Hyperparameters:
       epochs              = 300
@@ -51,13 +68,13 @@ SCOPE: COMPLETE with 6 generators
       num_channels        = 128
       class_dim           = [128, 128, 128]
 
-#3  TVAE                         Objective(R²): 0.5185
+#4  TVAE                         Objective(R²): 0.5185
     ─────────────────────────────────────────────────
     Fidelity:      0.7064    |  KS Sim: 0.6903   Corr Sim: 0.7225
-    Utility(R²):   0.9399    |  TSTR R²: -0.3655   TRTR R²: -0.3055
+    Utility(R²):  0.9399    |  TSTR: -0.3655   TRTR: -0.3055
     Privacy Risk:  0.7000    |  MIA AUC: 1.0000   NNDR: 1.0000
-    Time: 174s (2.9 min)
-    Reference HPO objective: 0.5495  |  Utility(HPO): 1.0000
+    Time: 174s (2.9 min)  |  HPO trials: 20
+    Reference HPO objective: 0.5495
 
     Best Hyperparameters:
       epochs              = 450
@@ -68,25 +85,25 @@ SCOPE: COMPLETE with 6 generators
       l2scale             = 3.752055855124284e-05
       loss_factor         = 5
 
-#4  GaussianCopula               Objective(R²): 0.5042
+#5  GaussianCopula               Objective(R²): 0.5041
     ─────────────────────────────────────────────────
     Fidelity:      0.6788    |  KS Sim: 0.7044   Corr Sim: 0.6531
-    Utility(R²):   0.9316    |  TSTR R²: -0.3738   TRTR R²: -0.3055
+    Utility(R²):  0.9316    |  TSTR: -0.3738   TRTR: -0.3055
     Privacy Risk:  0.7000    |  MIA AUC: 1.0000   NNDR: 1.0000
-    Time: 10s (0.2 min)
-    Reference HPO objective: 0.5315  |  Utility(HPO): 1.0000
+    Time: 10s (0.2 min)  |  HPO trials: 20
+    Reference HPO objective: 0.5315
 
     Best Hyperparameters:
       default_distribution= gamma
       enforce_min_max_values= False
 
-#5  CTGAN                        Objective(R²): 0.4859
+#6  CTGAN                        Objective(R²): 0.4859
     ─────────────────────────────────────────────────
     Fidelity:      0.7083    |  KS Sim: 0.6969   Corr Sim: 0.7198
-    Utility(R²):   0.8565    |  TSTR R²: -0.4490   TRTR R²: -0.3055
+    Utility(R²):  0.8565    |  TSTR: -0.4490   TRTR: -0.3055
     Privacy Risk:  0.7000    |  MIA AUC: 1.0000   NNDR: 1.0000
-    Time: 819s (13.6 min)
-    Reference HPO objective: 0.5477  |  Utility(HPO): 0.8758
+    Time: 819s (13.6 min)  |  HPO trials: 20
+    Reference HPO objective: 0.5477
 
     Best Hyperparameters:
       epochs              = 900
@@ -98,13 +115,13 @@ SCOPE: COMPLETE with 6 generators
       discriminator_steps = 5
       pac                 = 10
 
-#6  CopulaGAN                    Objective(R²): 0.2995
+#7  CopulaGAN                    Objective(R²): 0.2995
     ─────────────────────────────────────────────────
     Fidelity:      0.6981    |  KS Sim: 0.6556   Corr Sim: 0.7405
-    Utility(R²):   0.4008    |  TSTR R²: -0.9047   TRTR R²: -0.3055
+    Utility(R²):  0.4008    |  TSTR: -0.9047   TRTR: -0.3055
     Privacy Risk:  0.7000    |  MIA AUC: 1.0000   NNDR: 1.0000
-    Time: 207s (3.4 min)
-    Reference HPO objective: 0.5254  |  Utility(HPO): 0.5505
+    Time: 207s (3.4 min)  |  HPO trials: 20
+    Reference HPO objective: 0.5254
 
     Best Hyperparameters:
       epochs              = 700
@@ -118,9 +135,14 @@ SCOPE: COMPLETE with 6 generators
       default_distribution= gamma
 
 ================================================================================
-NOTES
+                        KEY OBSERVATIONS
 ================================================================================
-  Utility uses Train-on-Synthetic-Test-on-Real (TSTR) R² vs TRTR R² gap.
-  Regressors in report: LinearRegression, RandomForest, DecisionTree.
-  ForestDiffusion / TabDDPM: Not included in this 6-generator sweep.
-  Generated: 2026-09-09 | Framework: Optuna TPE | Dataset: real_estate | Generators: 6
+
+  1. Winner by R² objective: TabDDPM (0.6375).
+  2. Top fidelity: TabDDPM (0.9273).
+  3. Best R² utility: TabDDPM (0.9651).
+  4. Lowest privacy risk: TabDDPM (0.5972).
+
+================================================================================
+  Generated: 2026-09-28 | Framework: Optuna TPE | Dataset: real_estate | Generators: 7
+================================================================================

@@ -1,0 +1,7 @@
+{
+  "dataset": "cdc_diabetes",
+  "generator": "tabddpm",
+  "best_value": 0.5226304945789111,
+  "elapsed_sec": 1282.3332414509987,
+  "status": "completed"
+}

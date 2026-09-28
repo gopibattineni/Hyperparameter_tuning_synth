@@ -2,8 +2,8 @@
 set -euo pipefail
 WORKDIR="/home/gopi.battineni/Hyperparameter_tuning_synth"
 DIR="${WORKDIR}/results/classification/7_cdc_diabetes"
-LOG="${DIR}/cdc_diabetes_6gen_run.log"
-PIDFILE="${DIR}/cdc_diabetes_6gen.pid"
+LOG="${DIR}/cdc_diabetes_8gen_run.log"
+PIDFILE="${DIR}/cdc_diabetes_8gen.pid"
 
 cd "$WORKDIR"
 mkdir -p "$DIR"
@@ -12,10 +12,10 @@ if [ -f config/generators/ctabgan_full.yaml ]; then
   cp config/generators/ctabgan_full.yaml config/generators/ctabgan.yaml
 fi
 
-echo "==== start $(date -Is) cdc_diabetes 6 generators (1000 balanced samples) ====" >> "$LOG"
+echo "==== start $(date -Is) cdc_diabetes 8 generators (1000 balanced samples) ====" >> "$LOG"
 python3 -u scripts/run_experiments.py \
   --datasets cdc_diabetes \
-  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp \
+  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp forest_diffusion tabddpm \
   --n-trials 20 \
   --resume \
   >> "$LOG" 2>&1

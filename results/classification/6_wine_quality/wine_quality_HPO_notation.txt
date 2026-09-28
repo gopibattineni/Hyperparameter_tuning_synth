@@ -1,31 +1,47 @@
 ================================================================================
       WINE QUALITY — HYPERPARAMETER TUNING RESULTS (Notation File)
 ================================================================================
-Dataset: Wine Quality (white)
-Task: Multi-class Classification (quality score)
+Dataset: 6. Wine Quality
+Task: Classification (quality)
 Tuning Framework: Optuna (TPE Sampler, MedianPruner)
-Trials per Generator: 20
-Sampling: max_samples=1000, balance_classes=true, seed=42
 Train/Test sizes after sampling+split: 800 / 200
-Preprocessing: impute (median/mode) + categorical label-encoding (train-fitted)
-Objective (report ranking): MAXIMIZE  0.4×Fidelity + 0.4×Utility(Accuracy) − 0.2×PrivacyRisk
-Note: Optuna search itself used F1-based utility; Acc utility recomputed for this report.
+Objective (report ranking): MAXIMIZE  0.4×Fidelity + 0.4×Utility(Acc) − 0.2×PrivacyRisk
+Note: Optuna search used its own utility; report utility is recomputed as above.
 
-SCOPE: COMPLETE with 6 generators
-  Included: GaussianCopula, CopulaGAN, CTGAN, TVAE, CTAB-GAN+, WGAN-GP
-  Excluded: ForestDiffusion, TabDDPM
+SCOPE: 7 of 7 generators in this workbook
+  Included: TabDDPM, WGAN-GP, CTGAN, TVAE, GaussianCopula, CopulaGAN, CTAB-GAN+
 
 ================================================================================
-                RESULTS RANKED BY ACCURACY OBJECTIVE (Best → Worst)
+                RESULTS RANKED BY Acc OBJECTIVE (Best → Worst)
 ================================================================================
 
-#1  WGAN-GP                      Objective(Acc): 0.6181
+#1  TabDDPM                      Objective(Acc): 0.6497
+    ─────────────────────────────────────────────────
+    Fidelity:      0.9592    |  KS Sim: 0.9439   Corr Sim: 0.9745
+    Utility(Acc):  0.9550    |  TSTR: 0.4000   TRTR: 0.4450
+    Privacy Risk:  0.5798    |  MIA AUC: 0.7000   NNDR: 0.9005
+    Time: 1934s (32.2 min)  |  HPO trials: 10
+    Reference HPO objective: 0.6492
+
+    Best Hyperparameters:
+      batch_size          = 1024
+      lr                  = 0.0019212959255386383
+      num_timesteps       = 1000
+      steps               = 5000
+      n_layers            = 2
+      d_layers            = 256
+      sample_proportion   = 1.0
+      dropout             = 0.0
+      scheduler           = cosine
+      gaussian_loss_type  = mse
+
+#2  WGAN-GP                      Objective(Acc): 0.6181
     ─────────────────────────────────────────────────
     Fidelity:      0.9452    |  KS Sim: 0.9236   Corr Sim: 0.9667
-    Utility(Acc):  0.9050    |  TSTR Acc: 0.3500   TRTR Acc: 0.4450
+    Utility(Acc):  0.9050    |  TSTR: 0.3500   TRTR: 0.4450
     Privacy Risk:  0.6099    |  MIA AUC: 0.7742   NNDR: 0.9238
-    Time: 766s (12.8 min)
-    Reference F1-HPO objective: 0.6289  |  Utility(F1): 0.9258
+    Time: 766s (12.8 min)  |  HPO trials: 20
+    Reference HPO objective: 0.6289
 
     Best Hyperparameters:
       epochs              = 1600
@@ -36,13 +52,13 @@ SCOPE: COMPLETE with 6 generators
       n_critic            = 7
       lambda_gp           = 1.4493187008331718
 
-#2  CTGAN                        Objective(Acc): 0.6171
+#3  CTGAN                        Objective(Acc): 0.6171
     ─────────────────────────────────────────────────
     Fidelity:      0.9327    |  KS Sim: 0.9333   Corr Sim: 0.9321
-    Utility(Acc):  0.9117    |  TSTR Acc: 0.3567   TRTR Acc: 0.4450
+    Utility(Acc):  0.9117    |  TSTR: 0.3567   TRTR: 0.4450
     Privacy Risk:  0.6032    |  MIA AUC: 0.7711   NNDR: 0.9412
-    Time: 1941s (32.4 min)
-    Reference F1-HPO objective: 0.6329  |  Utility(F1): 0.9401
+    Time: 1941s (32.4 min)  |  HPO trials: 20
+    Reference HPO objective: 0.6329
 
     Best Hyperparameters:
       epochs              = 700
@@ -54,13 +70,13 @@ SCOPE: COMPLETE with 6 generators
       discriminator_steps = 3
       pac                 = 1
 
-#3  TVAE                         Objective(Acc): 0.6098
+#4  TVAE                         Objective(Acc): 0.6099
     ─────────────────────────────────────────────────
     Fidelity:      0.9079    |  KS Sim: 0.8903   Corr Sim: 0.9256
-    Utility(Acc):  0.9267    |  TSTR Acc: 0.3717   TRTR Acc: 0.4450
+    Utility(Acc):  0.9267    |  TSTR: 0.3717   TRTR: 0.4450
     Privacy Risk:  0.6200    |  MIA AUC: 0.7975   NNDR: 0.9291
-    Time: 702s (11.7 min)
-    Reference F1-HPO objective: 0.6491  |  Utility(F1): 0.9787
+    Time: 702s (11.7 min)  |  HPO trials: 20
+    Reference HPO objective: 0.6491
 
     Best Hyperparameters:
       epochs              = 600
@@ -71,25 +87,25 @@ SCOPE: COMPLETE with 6 generators
       l2scale             = 7.262678674155716e-05
       loss_factor         = 5
 
-#4  GaussianCopula               Objective(Acc): 0.5707
+#5  GaussianCopula               Objective(Acc): 0.5707
     ─────────────────────────────────────────────────
     Fidelity:      0.9266    |  KS Sim: 0.9004   Corr Sim: 0.9528
-    Utility(Acc):  0.8250    |  TSTR Acc: 0.2700   TRTR Acc: 0.4450
+    Utility(Acc):  0.8250    |  TSTR: 0.2700   TRTR: 0.4450
     Privacy Risk:  0.6500    |  MIA AUC: 0.8657   NNDR: 0.9429
-    Time: 19s (0.3 min)
-    Reference F1-HPO objective: 0.5741  |  Utility(F1): 0.8336
+    Time: 19s (0.3 min)  |  HPO trials: 20
+    Reference HPO objective: 0.5741
 
     Best Hyperparameters:
       default_distribution= norm
       enforce_min_max_values= False
 
-#5  CopulaGAN                    Objective(Acc): 0.5694
+#6  CopulaGAN                    Objective(Acc): 0.5694
     ─────────────────────────────────────────────────
     Fidelity:      0.8660    |  KS Sim: 0.8588   Corr Sim: 0.8732
-    Utility(Acc):  0.9017    |  TSTR Acc: 0.3467   TRTR Acc: 0.4450
+    Utility(Acc):  0.9017    |  TSTR: 0.3467   TRTR: 0.4450
     Privacy Risk:  0.6882    |  MIA AUC: 0.9460   NNDR: 0.9493
-    Time: 1133s (18.9 min)
-    Reference F1-HPO objective: 0.5805  |  Utility(F1): 0.9272
+    Time: 1133s (18.9 min)  |  HPO trials: 20
+    Reference HPO objective: 0.5805
 
     Best Hyperparameters:
       epochs              = 500
@@ -102,39 +118,31 @@ SCOPE: COMPLETE with 6 generators
       pac                 = 10
       default_distribution= truncnorm
 
-#6  CTAB-GAN+                    Objective(Acc): 0.5088
+#7  CTAB-GAN+                    Objective(Acc): 0.5088
     ─────────────────────────────────────────────────
     Fidelity:      0.8390    |  KS Sim: 0.8628   Corr Sim: 0.8152
-    Utility(Acc):  0.7867    |  TSTR Acc: 0.2317   TRTR Acc: 0.4450
+    Utility(Acc):  0.7867    |  TSTR: 0.2317   TRTR: 0.4450
     Privacy Risk:  0.7072    |  MIA AUC: 0.9816   NNDR: 0.9455
-    Time: 1457s (24.3 min)
-    Reference F1-HPO objective: 0.5744  |  Utility(F1): 0.7994
+    Time: 1457s (24.3 min)  |  HPO trials: 20
+    Reference HPO objective: 0.5744
 
     Best Hyperparameters:
       epochs              = 250
       batch_size          = 500
+      l2scale             = 1.3400367243354813e-06
       random_dim          = 150
       num_channels        = 64
       class_dim           = [128, 128, 128]
-      l2scale             = 1.3400367243354813e-06
-
-================================================================================
-                        SKIPPED / EXCLUDED
-================================================================================
-
-  ForestDiffusion: Not included in this 6-generator wine_quality sweep.
-  TabDDPM:         Dependencies not installed / excluded from phase-1 sweeps.
 
 ================================================================================
                         KEY OBSERVATIONS
 ================================================================================
 
-  1. Winner by Acc objective: WGAN-GP (0.6181).
-  2. Top fidelity: WGAN-GP (0.9452).
-  3. Best Acc utility: TVAE (0.9267).
-  4. Lowest privacy risk: CTGAN (0.6032).
-  5. Ranking uses Accuracy utility; F1-HPO objectives kept as reference only.
+  1. Winner by Acc objective: TabDDPM (0.6497).
+  2. Top fidelity: TabDDPM (0.9592).
+  3. Best Acc utility: TabDDPM (0.9550).
+  4. Lowest privacy risk: TabDDPM (0.5798).
 
 ================================================================================
-  Generated: 2026-09-02 | Framework: Optuna TPE | Dataset: wine_quality | Generators: 6
+  Generated: 2026-09-28 | Framework: Optuna TPE | Dataset: wine_quality | Generators: 7
 ================================================================================

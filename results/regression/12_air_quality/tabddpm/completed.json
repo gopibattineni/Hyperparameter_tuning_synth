@@ -1,0 +1,7 @@
+{
+  "dataset": "air_quality",
+  "generator": "tabddpm",
+  "best_value": 0.6517415060230969,
+  "elapsed_sec": 779.1426425569807,
+  "status": "completed"
+}

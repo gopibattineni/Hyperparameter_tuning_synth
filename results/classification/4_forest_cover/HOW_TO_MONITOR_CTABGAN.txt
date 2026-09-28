@@ -1,7 +1,8 @@
-Forest Cover CTAB-GAN+ FAST — detached on patten
+Forest Cover CTAB-GAN+ FAST — detached
 
 PID:  ctabgan.pid
 Log:  ctabgan_fast_run.log
+Python: /home/gopi_b/SYNTH_BENCHMARK/.venv/bin/python
 
 Profile: epochs 75–125, batch=500, 10 trials
 Encoding: max_int_categories=20 (37 discrete soil/wilderness flags + continuous numerics)
@@ -10,5 +11,3 @@ Other 5 generators already completed (resume skips them)
 Check:
   ps -p $(cat results/classification/4_forest_cover/ctabgan.pid) -o pid,etime,pcpu,cmd
   tail -f results/classification/4_forest_cover/ctabgan_fast_run.log
-
-Safe to lock PC — parent is systemd. Keep patten powered on.

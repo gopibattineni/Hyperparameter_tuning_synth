@@ -1,0 +1,7 @@
+{
+  "dataset": "real_estate",
+  "generator": "tabddpm",
+  "best_value": 0.5931269766004406,
+  "elapsed_sec": 407.08625996200135,
+  "status": "completed"
+}

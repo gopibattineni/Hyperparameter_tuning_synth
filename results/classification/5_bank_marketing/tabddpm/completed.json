@@ -1,0 +1,7 @@
+{
+  "dataset": "bank_marketing",
+  "generator": "tabddpm",
+  "best_value": 0.5199521251734387,
+  "elapsed_sec": 1154.4639554219993,
+  "status": "completed"
+}

@@ -1,0 +1,19 @@
+Forest Cover × TabDDPM + ForestDiffusion — detached
+
+Log:  diffusion_run.log
+PID:  diffusion.pid
+
+Order:
+  1. TabDDPM FAST (10 trials, GPU 0) — starts immediately
+  2. Wait for ctabgan/completed.json
+  3. ForestDiffusion FAST (10 trials, CPU)
+  4. Write 8-generator Excel + notation if all 8 finished
+
+Check:
+  ps -p $(cat results/classification/4_forest_cover/diffusion.pid) -o pid,etime,pcpu,cmd
+  tail -f results/classification/4_forest_cover/diffusion_run.log
+
+Done when:
+  results/classification/4_forest_cover/tabddpm/completed.json
+  results/classification/4_forest_cover/forest_diffusion/completed.json
+  results/classification/4_forest_cover/forest_cover_HPO_results.xlsx

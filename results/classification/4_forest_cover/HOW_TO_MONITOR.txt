@@ -1,9 +1,12 @@
-Forest Cover × CTAB-GAN+ (FAST) — resilient 18h run on patten
+Forest Cover × CTAB-GAN+ (FAST) — resilient 18h run
 
 Worker PID file:  ctabgan.pid
 Watchdog PID:     ctabgan_watchdog.pid
 Worker log:       ctabgan_fast_run.log
 Watchdog log:     ctabgan_watchdog.log
+
+Python: /home/gopi_b/SYNTH_BENCHMARK/.venv/bin/python
+Vendor: /home/gopi_b/SYNTH_BENCHMARK
 
 What runs:
   - CTAB-GAN+ HPO (10 trials, fast profile)
@@ -22,6 +25,3 @@ Follow logs:
 
 Done when:
   results/classification/4_forest_cover/ctabgan/completed.json
-
-Safe to lock PC / disconnect — both processes parent is systemd on patten.
-Keep the patten server powered on.
