@@ -63,7 +63,6 @@ GENERATORS: list[tuple[str, str]] = [
     ("tvae", "TVAE"),
     ("ctabgan", "CTAB-GAN+"),
     ("wgan_gp", "WGAN-GP"),
-    ("forest_diffusion", "ForestDiffusion"),
     ("tabddpm", "TabDDPM"),
 ]
 
@@ -75,7 +74,6 @@ GEN_COLORS = {
     "tvae": "#CC79A7",
     "ctabgan": "#D55E00",
     "wgan_gp": "#56B4E9",
-    "forest_diffusion": "#000000",
     "tabddpm": "#999999",
 }
 

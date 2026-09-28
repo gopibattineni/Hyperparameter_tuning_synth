@@ -1,6 +1,6 @@
 """Snap continuous synthetic values back onto discrete / categorical levels.
 
-Continuous generators (WGAN-GP, ForestDiffusion) often emit soft floats for
+Continuous generators (WGAN-GP, TabDDPM) often emit soft floats for
 binary/integer targets (e.g. 0.97 instead of 1). Downstream TSTR classifiers
 then see hundreds of fake classes and score ~0 utility/accuracy.
 """

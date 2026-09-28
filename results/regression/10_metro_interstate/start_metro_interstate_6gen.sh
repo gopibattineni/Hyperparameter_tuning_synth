@@ -15,7 +15,7 @@ fi
 echo "==== start $(date -Is) metro_interstate FULL 6-gen rerun (date_time dropped) ====" >> "$LOG"
 python3 -u scripts/run_experiments.py \
   --datasets metro_interstate \
-  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp forest_diffusion tabddpm \
+  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp tabddpm \
   --n-trials 20 \
   --no-resume \
   >> "$LOG" 2>&1

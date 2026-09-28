@@ -29,9 +29,9 @@ For every **dataset × generator** pair it:
 
 ## 2. Goals
 
-- Compare 8 research generators fairly under the same evaluation protocol
+- Compare 7 research generators fairly under the same evaluation protocol
 - Discover hyperparameters that tune well for high-quality synthetic data
-- Support resumeable large sweeps (15 datasets × 8 generators)
+- Support resumeable large sweeps (15 datasets × 7 generators)
 - Produce reusable artefacts: best params, metrics, synthetic CSVs, master CSV
 
 ---
@@ -51,7 +51,6 @@ Hyperparameter_tuning_synth/
 │       ├── ctabgan.yaml
 │       ├── tvae.yaml
 │       ├── wgan_gp.yaml
-│       ├── forest_diffusion.yaml
 │       ├── tabddpm.yaml
 │       └── bootstrap_noise.yaml   # smoke / baseline only
 ├── datasets/
@@ -61,7 +60,7 @@ Hyperparameter_tuning_synth/
 │   ├── base.py                    # BaseGenerator interface
 │   ├── registry.py                # name → class lookup
 │   ├── sdv_wrappers.py            # GaussianCopula, CopulaGAN, CTGAN, TVAE
-│   ├── advanced_wrappers.py       # CTAB-GAN+, ForestDiffusion, TabDDPM, WGAN-GP
+│   ├── advanced_wrappers.py       # CTAB-GAN+, TabDDPM, WGAN-GP
 │   └── bootstrap.py               # noise baseline
 ├── evaluation/
 │   ├── fidelity.py                # KS + correlation similarity
@@ -186,8 +185,7 @@ Weighted mix (higher = worse):
 | `ctabgan` | CTAB-GAN+ vendor | CNN tabular GAN |
 | `tvae` | SDV TVAE | Tabular VAE |
 | `wgan_gp` | Torch MLP WGAN-GP | Wasserstein + gradient penalty |
-| `forest_diffusion` | ForestDiffusion | Tree-based diffusion / flow |
-| `tabddpm` | TabDDPM vendor | Diffusion (often unavailable if deps missing) |
+| `tabddpm` | TabDDPM vendor | Diffusion (GPU; vendor under SYNTH_BENCHMARK) |
 
 Each generator has:
 
@@ -354,7 +352,7 @@ Excel sheets in each report:
 
 3. **TabDDPM** frequently unavailable unless `libzero` / `rtdl` are installed carefully.
 
-4. Some generators (notably **WGAN-GP**, **ForestDiffusion**) can achieve high fidelity but near-zero utility on small/clinical tables — synthetic lookalike data that does not train useful classifiers.
+4. Some generators (notably **WGAN-GP**) can achieve high fidelity but near-zero utility on small/clinical tables — synthetic lookalike data that does not train useful classifiers.
 
 5. Adult / large tables make GAN trials slow (tens of minutes per trial). Prefer resume and smaller trial budgets for exploration.
 

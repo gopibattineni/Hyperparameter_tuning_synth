@@ -5,6 +5,6 @@ phase=phase2_regression
 task=regression
 target=Concrete compressive strength
 max_samples=1000
-generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp,forest_diffusion,tabddpm
+generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp,tabddpm
 n_trials=20
 launch=start_concrete_6gen.sh (detached via setsid on patten)

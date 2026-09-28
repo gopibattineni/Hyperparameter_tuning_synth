@@ -1,6 +1,7 @@
-"""Wrappers for CTAB-GAN+, WGAN-GP, ForestDiffusion, TabDDPM.
+"""Wrappers for CTAB-GAN+, WGAN-GP, and TabDDPM.
 
-Heavy backends are optional; ``is_available()`` gates the experiment runner.
+Optional dependency packages that are not installed cause the corresponding
+``is_available()`` to return False so the Optuna runner can skip them.
 """
 
 from __future__ import annotations
@@ -270,111 +271,6 @@ class WGANGPGenerator(BaseGenerator):
         out = base.copy()
         for c in self._num_cols:
             out[c] = num[c].to_numpy()
-        out = snap_discrete_columns(out, getattr(self, "_discrete_levels", {}))
-        return out[self._columns]
-
-
-# ---------------------------------------------------------------------------
-# ForestDiffusion
-# ---------------------------------------------------------------------------
-
-@register
-class ForestDiffusionGenerator(BaseGenerator):
-    name = "forest_diffusion"
-
-    @classmethod
-    def is_available(cls) -> bool:
-        try:
-            from ForestDiffusion import ForestDiffusionModel  # noqa: F401
-            return True
-        except ImportError:
-            return False
-
-    def fit(self, train_df: pd.DataFrame, metadata: Any) -> "ForestDiffusionGenerator":
-        from ForestDiffusion import ForestDiffusionModel
-
-        self._columns = list(train_df.columns)
-        self._discrete_levels = discrete_levels_from_train(train_df, metadata)
-        target = getattr(metadata, "target", None)
-        task = getattr(metadata, "task", None)
-        work = train_df.copy()
-        for c in work.columns:
-            if not pd.api.types.is_numeric_dtype(work[c]):
-                work[c] = pd.Categorical(work[c].astype(str)).codes
-
-        cat_names = set(getattr(metadata, "categorical_columns", ()) or ())
-        if target and task == "classification":
-            cat_names.add(target)
-        cat_names.update(self._discrete_levels.keys())
-
-        feature_cols = [c for c in work.columns if c != target] if target else list(work.columns)
-        bin_cols: list[str] = []
-        multi_cat: list[str] = []
-        for c in feature_cols:
-            nunique = int(work[c].nunique(dropna=True))
-            if c in cat_names and nunique <= 2:
-                bin_cols.append(c)
-            elif c in cat_names:
-                multi_cat.append(c)
-
-        self._target = target
-        self._classification = bool(target and task == "classification")
-        self._feature_cols = feature_cols
-        if self._classification:
-            label_y = work[target].to_numpy()
-            arr = work[feature_cols].to_numpy(dtype=float)
-            bin_indexes = [feature_cols.index(c) for c in bin_cols]
-            cat_indexes = [feature_cols.index(c) for c in multi_cat]
-        else:
-            label_y = None
-            arr = work.to_numpy(dtype=float)
-            self._feature_cols = list(work.columns)
-            bin_indexes = [self._feature_cols.index(c) for c in bin_cols]
-            cat_indexes = [self._feature_cols.index(c) for c in multi_cat]
-
-        kwargs = dict(
-            n_t=int(self.params.get("n_t", 50)),
-            duplicate_K=int(self.params.get("duplicate_K", 100)),
-            n_estimators=int(self.params.get("n_estimators", 100)),
-            max_depth=int(self.params.get("max_depth", 7)),
-            eta=float(self.params.get("eta", 0.3)),
-            bin_indexes=bin_indexes,
-            cat_indexes=cat_indexes,
-            n_jobs=int(self.params.get("n_jobs", 1)),
-            seed=int(self.params.get("seed", 42)),
-            label_y=label_y,
-        )
-        diffusion_type = self.params.get("diffusion_type", "vp")
-        try:
-            self._model = ForestDiffusionModel(arr, diffusion_type=diffusion_type, **kwargs)
-        except TypeError:
-            kwargs.pop("label_y", None)
-            try:
-                self._model = ForestDiffusionModel(arr, diffusion_type=diffusion_type, **kwargs)
-            except TypeError:
-                self._model = ForestDiffusionModel(arr, **kwargs)
-        self.is_fitted = True
-        return self
-
-    def sample(self, n: int, seed: int | None = None) -> pd.DataFrame:
-        if not self.is_fitted:
-            raise RuntimeError("Call fit() before sample().")
-        try:
-            arr = self._model.generate(n_samples=n)
-        except TypeError:
-            arr = self._model.generate(batch_size=n)
-        if getattr(self, "_classification", False) and arr.shape[1] == len(self._feature_cols) + 1:
-            out = pd.DataFrame(arr[:, :-1], columns=self._feature_cols)
-            out[self._target] = arr[:, -1]
-        elif arr.shape[1] == len(self._columns):
-            out = pd.DataFrame(arr, columns=self._columns)
-        else:
-            out = pd.DataFrame(arr[:, : len(self._feature_cols)], columns=self._feature_cols)
-            if getattr(self, "_target", None):
-                out[self._target] = arr[:, -1] if arr.shape[1] > len(self._feature_cols) else pd.NA
-        for c in self._columns:
-            if c not in out.columns:
-                out[c] = pd.NA
         out = snap_discrete_columns(out, getattr(self, "_discrete_levels", {}))
         return out[self._columns]
 

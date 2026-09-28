@@ -12,9 +12,9 @@ Hyperparameter_tuning_synth/
 ├── generators/             # BaseGenerator + wrappers
 ├── datasets/               # DatasetSpec + loader
 ├── evaluation/             # fidelity / privacy / utility / objective
-├── tuning/                 # Optuna objective, optimizer, artifacts
-├── scripts/                # CLI entry points
-├── results/                # run outputs
+├── tuning/                 # Optuna objective, optimizer, artifacts, HPO reports
+├── scripts/                # CLI entry points + multi-GPU helpers
+├── results/                # run outputs + Excel/notation report packs
 ├── config_utils.py
 ├── requirements-hpo.txt
 ├── DOCUMENTATION.md
@@ -27,14 +27,22 @@ Hyperparameter_tuning_synth/
 0.4 × Fidelity + 0.4 × Utility − 0.2 × PrivacyRisk   (maximize)
 ```
 
-## Generators (8)
+## Generators (7)
 
-GaussianCopula · CopulaGAN · CTGAN · CTAB-GAN+ · TVAE · WGAN-GP · ForestDiffusion · TabDDPM
+GaussianCopula · CopulaGAN · CTGAN · CTAB-GAN+ · TVAE · WGAN-GP · TabDDPM
+
+## Datasets (15)
+
+**Classification (9):** cancer, alzheimers, adult, forest_cover, bank_marketing, wine_quality, cdc_diabetes, mushroom, magic_gamma
+
+**Regression (6):** metro_interstate, online_shopping, air_quality, concrete, energy_efficiency, real_estate
+
+Full sweep: **15 × 7 = 105** dataset × generator pairs.
 
 ## Quick start
 
 ```bash
-cd /home/gopi.battineni/Hyperparameter_tuning_synth
+cd /home/gopi_b/Hyperparameter_tuning_synth
 pip install -r requirements-hpo.txt
 
 # Priority sweep
@@ -42,13 +50,19 @@ python scripts/run_experiments.py --datasets cancer alzheimers adult --n-trials 
 
 # Single pair
 python scripts/run_tuning.py --generator ctgan --dataset cancer --n-trials 10
+
+# Fill missing pairs across healthy GPUs (default: TabDDPM)
+scripts/run_6gpu_parallel.sh start
+
+# Rebuild Adult-style HPO Excel + notation for every dataset
+scripts/write_all_8gen_reports.sh
 ```
 
 Outputs land in `results/`:
 
 - `all_experiments.csv` — master log
 - `{classification|regression}/{n}_{dataset}/{generator}/best_params.json`, `metrics.json`, `best_synthetic.csv`, `trials.csv`, `completed.json`
-- Report packs: `results/classification/1_cancer/cancer_HPO_*.{txt,xlsx}`, `results/classification/2_alzheimers/alzheimers_HPO_*.{txt,xlsx}`
+- Report packs: `{dataset}_HPO_results.xlsx` + `{dataset}_HPO_notation.txt` (7 generators ranked)
 
 ## Quick check
 

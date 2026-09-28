@@ -12,10 +12,10 @@ if [ -f config/generators/ctabgan_full.yaml ]; then
   cp config/generators/ctabgan_full.yaml config/generators/ctabgan.yaml
 fi
 
-echo "==== start $(date -Is) energy_efficiency 8 generators (1000 samples, regression) ====" >> "$LOG"
+echo "==== start $(date -Is) energy_efficiency 7 generators (1000 samples, regression) ====" >> "$LOG"
 python3 -u scripts/run_experiments.py \
   --datasets energy_efficiency \
-  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp forest_diffusion tabddpm \
+  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp tabddpm \
   --n-trials 20 \
   --resume \
   >> "$LOG" 2>&1

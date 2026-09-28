@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Experiment runner: 15 datasets × 8 generators Optuna HPO sweep.
+"""Experiment runner: 15 datasets × 7 generators Optuna HPO sweep.
 
 For every dataset–generator pair:
   1. Run Optuna optimization (skips if resume + already completed)
@@ -35,7 +35,7 @@ from generators.registry import get_generator_class
 from tuning.artifacts import is_completed, run_dir
 from tuning.optimizer import run_study
 
-# Canonical 8 research generators (bootstrap_noise excluded from full sweeps)
+# Canonical 7 research generators (bootstrap_noise excluded from full sweeps)
 RESEARCH_GENERATORS = [
     "gaussian_copula",
     "copulagan",
@@ -43,7 +43,6 @@ RESEARCH_GENERATORS = [
     "ctabgan",
     "tvae",
     "wgan_gp",
-    "forest_diffusion",
     "tabddpm",
 ]
 
@@ -51,7 +50,7 @@ MASTER_CSV = "all_experiments.csv"
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Run 15×8 Optuna HPO experiments")
+    p = argparse.ArgumentParser(description="Run 15×7 Optuna HPO experiments")
     p.add_argument("--datasets", nargs="*", default=None, help="Subset of dataset keys")
     p.add_argument("--generators", nargs="*", default=None, help="Subset of generator keys")
     p.add_argument("--n-trials", type=int, default=None, help="Override optuna.yaml n_trials")

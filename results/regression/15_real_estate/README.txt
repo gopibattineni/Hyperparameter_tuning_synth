@@ -6,6 +6,6 @@ task=regression
 target=Y house price of unit area
 max_samples=1000
 drop_columns=["X1 transaction date"]
-generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp,forest_diffusion,tabddpm
+generators=gaussian_copula,copulagan,ctgan,tvae,ctabgan,wgan_gp,tabddpm
 n_trials=20
 launch=start_real_estate_6gen.sh (detached via setsid on patten)

@@ -15,7 +15,7 @@ fi
 echo "==== start $(date -Is) online_shopping FULL 6-gen fair rerun (drop session ID + page 2; discrete day/order) ====" >> "$LOG"
 python3 -u scripts/run_experiments.py \
   --datasets online_shopping \
-  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp forest_diffusion tabddpm \
+  --generators gaussian_copula copulagan ctgan tvae ctabgan wgan_gp tabddpm \
   --n-trials 20 \
   --no-resume \
   >> "$LOG" 2>&1

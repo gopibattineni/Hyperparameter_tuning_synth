@@ -6,7 +6,6 @@ Workbook structure (3 sheets):
   3. Best Hyperparameters
 
 Generators included: GaussianCopula, CopulaGAN, CTGAN, TVAE, CTAB-GAN+, WGAN-GP, TabDDPM
-(ForestDiffusion excluded until more datasets complete.)
 """
 
 from __future__ import annotations
@@ -136,8 +135,6 @@ GEN_ALIASES = {
     "wgangp": "wgan_gp",
     "wgan-gp": "wgan_gp",
     "wgan_gp": "wgan_gp",
-    "forestdiffusion": "forest_diffusion",
-    "forest_diffusion": "forest_diffusion",
     "tabddpm": "tabddpm",
 }
 

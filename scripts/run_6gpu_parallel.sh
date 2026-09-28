@@ -7,7 +7,7 @@
 #
 # Optional environment:
 #   GPUS="0,1,2,3,4,5"          # default: probe 0-5 and skip dead cards
-#   GENERATORS="tabddpm forest_diffusion"
+#   GENERATORS="tabddpm"
 #   DATASETS="cancer adult forest_cover"
 #   N_TRIALS=10
 #   SYNTH_PYTHON=/path/to/python
@@ -47,7 +47,7 @@ pair_running() {
 }
 
 build_queue() {
-  local gens="${GENERATORS:-tabddpm forest_diffusion}"
+  local gens="${GENERATORS:-tabddpm}"
   local dsets="${DATASETS:-}"
   local n_trials="${N_TRIALS:-10}"
   "$PYTHON" - "$WORKDIR" "$gens" "$dsets" "$n_trials" <<'PY'

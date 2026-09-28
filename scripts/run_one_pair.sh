@@ -21,7 +21,7 @@ export CUDA_VISIBLE_DEVICES="${GPU_ID}"
 
 if [ -z "$N_TRIALS" ]; then
   case "$GENERATOR" in
-    tabddpm|forest_diffusion|ctabgan) N_TRIALS=10 ;;
+    tabddpm|ctabgan) N_TRIALS=10 ;;
     *) N_TRIALS=20 ;;
   esac
 fi
