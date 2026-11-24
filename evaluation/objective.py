@@ -21,6 +21,21 @@ DEFAULT_WEIGHTS = {
 }
 
 
+def _resolve_weights(cfg: Mapping[str, Any]) -> dict[str, float]:
+    weights = dict(DEFAULT_WEIGHTS)
+    w_cfg = cfg.get("weights") or {}
+    # Support both legacy ``privacy`` weight and explicit ``privacy_risk``
+    if "fidelity" in w_cfg:
+        weights["fidelity"] = float(w_cfg["fidelity"])
+    if "utility" in w_cfg:
+        weights["utility"] = float(w_cfg["utility"])
+    if "privacy_risk" in w_cfg:
+        weights["privacy_risk"] = float(w_cfg["privacy_risk"])
+    elif "privacy" in w_cfg:
+        weights["privacy_risk"] = float(w_cfg["privacy"])
+    return weights
+
+
 def compute_objective(
     fidelity: Mapping[str, float],
     privacy: Mapping[str, float],
@@ -35,19 +50,21 @@ def compute_objective(
         Includes ``objective``, ``fidelity``, ``utility``, ``privacy_risk``.
     """
     cfg = cfg or {}
-    weights = dict(DEFAULT_WEIGHTS)
-    w_cfg = cfg.get("weights") or {}
-    # Support both legacy ``privacy`` weight and explicit ``privacy_risk``
-    if "fidelity" in w_cfg:
-        weights["fidelity"] = float(w_cfg["fidelity"])
-    if "utility" in w_cfg:
-        weights["utility"] = float(w_cfg["utility"])
-    if "privacy_risk" in w_cfg:
-        weights["privacy_risk"] = float(w_cfg["privacy_risk"])
-    elif "privacy" in w_cfg:
-        weights["privacy_risk"] = float(w_cfg["privacy"])
+    weights = _resolve_weights(cfg)
 
-    f = clip01(float(fidelity.get("fidelity", 0.0)))
+    raw_f = fidelity.get("fidelity", 0.0)
+    # Refuse to silently score when fidelity was marked unavailable (NaN).
+    try:
+        raw_f_f = float(raw_f)
+    except (TypeError, ValueError):
+        raw_f_f = float("nan")
+    if raw_f_f != raw_f_f:  # NaN
+        raise ValueError(
+            "Cannot compute objective: fidelity is unavailable (NaN). "
+            "Under sdv_only / require_sdv the trial must be failed or pruned."
+        )
+
+    f = clip01(raw_f_f)
     u = clip01(float(utility.get("utility", 0.0)))
     r = clip01(float(privacy.get("privacy_risk", 0.5)))
 

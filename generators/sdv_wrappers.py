@@ -100,6 +100,8 @@ class CTGANGenerator(_SDVBase):
     def _make_synthesizer(self, metadata, params: Mapping[str, Any]):
         from sdv.single_table import CTGANSynthesizer
 
+        from .device import assert_cuda_available
+
         keys = [
             "epochs", "batch_size", "generator_lr", "discriminator_lr",
             "generator_dim", "discriminator_dim", "discriminator_steps", "pac",
@@ -112,6 +114,9 @@ class CTGANGenerator(_SDVBase):
                     kwargs[d] = eval(kwargs[d], {"__builtins__": {}})  # noqa: S307
                 if isinstance(kwargs[d], tuple):
                     kwargs[d] = list(kwargs[d])
+        assert_cuda_available(context="ctgan")
+        # Prefer enable_gpu (cuda= is deprecated in current CTGAN/SDV).
+        kwargs["enable_gpu"] = True
         return CTGANSynthesizer(metadata, **kwargs)
 
 
@@ -121,6 +126,8 @@ class CopulaGANGenerator(_SDVBase):
 
     def _make_synthesizer(self, metadata, params: Mapping[str, Any]):
         from sdv.single_table import CopulaGANSynthesizer
+
+        from .device import assert_cuda_available
 
         keys = [
             "epochs", "batch_size", "generator_lr", "discriminator_lr",
@@ -134,6 +141,8 @@ class CopulaGANGenerator(_SDVBase):
                     kwargs[d] = eval(kwargs[d], {"__builtins__": {}})  # noqa: S307
                 if isinstance(kwargs[d], tuple):
                     kwargs[d] = list(kwargs[d])
+        assert_cuda_available(context="copulagan")
+        kwargs["enable_gpu"] = True
         return CopulaGANSynthesizer(metadata, **kwargs)
 
 
@@ -143,6 +152,8 @@ class TVAEGenerator(_SDVBase):
 
     def _make_synthesizer(self, metadata, params: Mapping[str, Any]):
         from sdv.single_table import TVAESynthesizer
+
+        from .device import assert_cuda_available
 
         keys = [
             "epochs", "batch_size", "embedding_dim", "compress_dims",
@@ -155,4 +166,6 @@ class TVAEGenerator(_SDVBase):
                     kwargs[d] = eval(kwargs[d], {"__builtins__": {}})  # noqa: S307
                 if isinstance(kwargs[d], tuple):
                     kwargs[d] = list(kwargs[d])
+        assert_cuda_available(context="tvae")
+        kwargs["enable_gpu"] = True
         return TVAESynthesizer(metadata, **kwargs)

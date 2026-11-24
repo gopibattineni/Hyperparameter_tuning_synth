@@ -17,6 +17,7 @@ from .sdv_wrappers import (
 )
 from .advanced_wrappers import (
     CTABGANGenerator,
+    ForestDiffusionGenerator,
     TabDDPMGenerator,
     WGANGPGenerator,
 )
@@ -30,6 +31,7 @@ __all__ = [
     "TVAEGenerator",
     "CTABGANGenerator",
     "WGANGPGenerator",
+    "ForestDiffusionGenerator",
     "TabDDPMGenerator",
     "create_generator",
     "get_generator_class",

@@ -15,6 +15,11 @@ try:
 except ImportError as exc:  # pragma: no cover
     raise ImportError("optuna is required") from exc
 
+try:
+    from optuna.samplers import GPSampler as _GPSampler
+except ImportError:  # pragma: no cover
+    _GPSampler = None  # type: ignore
+
 from config_utils import CONFIG_ROOT, load_config, load_generator_config
 from datasets.loader import load_train_test
 from datasets.schema import DatasetSpec
@@ -218,12 +223,32 @@ def finalize_study_from_storage(
 
 
 def _build_sampler(cfg: Mapping[str, Any]):
-    name = str((cfg.get("sampler") or {}).get("name", "TPESampler"))
-    seed = int((cfg.get("sampler") or {}).get("seed", cfg.get("seed", 42)))
+    s = cfg.get("sampler") or {}
+    name = str(s.get("name", "TPESampler"))
+    seed = int(s.get("seed", cfg.get("seed", 42)))
     if name == "RandomSampler":
         return RandomSampler(seed=seed)
-    return TPESampler(seed=seed)
-
+    if name == "GPSampler":
+        if _GPSampler is None:
+            raise ImportError(
+                "GPSampler is not available in this Optuna install. "
+                "Requires Optuna ≥ 3.x with scipy/torch."
+            )
+        return _GPSampler(
+            seed=seed,
+            n_startup_trials=int(s.get("n_startup_trials", 10)),
+            deterministic_objective=bool(s.get("deterministic_objective", False)),
+            warn_independent_sampling=bool(s.get("warn_independent_sampling", True)),
+        )
+    # TPESampler (default). multivariate=True enables Optuna's multivariate TPE.
+    kwargs: dict[str, Any] = {"seed": seed}
+    if "multivariate" in s and s.get("multivariate") is not None:
+        kwargs["multivariate"] = bool(s.get("multivariate"))
+    if "constant_liar" in s and s.get("constant_liar") is not None:
+        kwargs["constant_liar"] = bool(s.get("constant_liar"))
+    if "n_startup_trials" in s and s.get("n_startup_trials") is not None:
+        kwargs["n_startup_trials"] = int(s.get("n_startup_trials"))
+    return TPESampler(**kwargs)
 
 def _build_pruner(cfg: Mapping[str, Any]):
     p = cfg.get("pruner") or {}
@@ -282,20 +307,35 @@ def run_study(
         seed=int(optuna_cfg.get("seed", 42)),
     )
 
+    study_name = f"{dataset_key}__{generator_name}"
+    storage_cfg = optuna_cfg.get("storage") or {}
+    storage_url = storage_cfg.get("url")
+    if storage_url in (None, "null", ""):
+        storage_url = None
+    elif str(storage_url).lower() == "auto":
+        storage_url = study_storage_url(out)
+
     study = optuna.create_study(
         direction=str(objective_cfg.get("direction", "maximize")),
         sampler=_build_sampler(optuna_cfg),
         pruner=_build_pruner(optuna_cfg),
-        study_name=f"{dataset_key}__{generator_name}",
+        study_name=study_name,
+        storage=storage_url,
+        load_if_exists=bool(storage_url),
     )
 
+    # Resume: only run remaining trials toward the configured budget.
+    n_already = len(study.trials)
+    n_remaining = max(0, n_trials - n_already)
+
     try:
-        study.optimize(
-            objective,
-            n_trials=n_trials,
-            timeout=None if timeout in (None, "null") else float(timeout),
-            show_progress_bar=show_trial_progress,
-        )
+        if n_remaining > 0:
+            study.optimize(
+                objective,
+                n_trials=n_remaining,
+                timeout=None if timeout in (None, "null") else float(timeout),
+                show_progress_bar=show_trial_progress,
+            )
 
         # Retrain best params and export final synthetic + metrics
         best_params = dict(study.best_params)

@@ -1,7 +1,8 @@
 # Objective configuration for Optuna trials.
 #
 # Formula (maximize):
-#   Objective = 0.4 × Fidelity + 0.4 × Utility − 0.2 × PrivacyRisk
+#   Objective = wF × Fidelity + wU × Utility − wP × PrivacyRisk
+# Default weights (O1): 0.4 / 0.4 / 0.2
 # All three components are normalized to [0, 1] inside the evaluators /
 # compute_objective layer.
 
@@ -12,6 +13,31 @@ weights:
   fidelity: 0.40
   utility: 0.40
   privacy_risk: 0.20        # subtracted in the objective
+
+# Named weight presets for objective_weight_sensitivity (sums ≈ 1).
+# Selecting a preset via CLI does not mutate these default weights unless
+# the sensitivity runner resolves the preset into a study-local config.
+presets:
+  O1:
+    fidelity: 0.400
+    utility: 0.400
+    privacy_risk: 0.200
+  O2:
+    fidelity: 0.200
+    utility: 0.600
+    privacy_risk: 0.200
+  O3:
+    fidelity: 0.600
+    utility: 0.200
+    privacy_risk: 0.200
+  O4:
+    fidelity: 0.300
+    utility: 0.300
+    privacy_risk: 0.400
+  O5:
+    fidelity: 0.333
+    utility: 0.333
+    privacy_risk: 0.334
 
 normalize: clip01           # per-trial clip to [0,1] after metric aggregation
 
@@ -27,6 +53,11 @@ nsga2:
   population_size: 50
 
 fidelity:
+  # sdv_only: F = SDV QualityReport only (default for all O1–O5 objectives).
+  # KS / correlation are diagnostics only — never enter J.
+  # legacy_composite: historical 0.5·SDV + 0.25·KS + 0.25·Corr (kept for replay only)
+  aggregation: sdv_only
+  require_sdv: true
   primary: fidelity
   extras:
     - ks_similarity

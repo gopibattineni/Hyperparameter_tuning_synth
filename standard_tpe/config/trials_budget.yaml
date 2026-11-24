@@ -1,0 +1,11 @@
+# Trial budgets used by the standard-TPE baseline (Cancer & Alzheimer's).
+
+default: 20
+
+by_generator:
+  tabddpm: 10
+  forest_diffusion: 20
+
+by_pair:
+  cancer__wgan_gp: 50
+  alzheimers__wgan_gp: 20

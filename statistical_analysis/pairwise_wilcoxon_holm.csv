@@ -1,0 +1,4 @@
+comparison,algo_a,algo_b,mean_a,mean_b,mean_delta_a_minus_b,n_a_better,n_b_better,n_ties,wilcoxon_stat,p_raw,p_holm,significant_holm_0.05,direction
+Standard TPE vs Multivariate TPE,Standard TPE,Multivariate TPE,0.5752338030287059,0.575744848052766,-0.0005110450240600491,7,8,0,48.0,0.52447509765625,0.52447509765625,False,Multivariate TPE higher mean (numerically)
+Standard TPE vs Gaussian Process,Standard TPE,Gaussian Process,0.5752338030287059,0.5791919036548464,-0.003958100626140326,3,12,0,19.0,0.01806640625,0.0361328125,True,Gaussian Process higher mean (numerically)
+Multivariate TPE vs Gaussian Process,Multivariate TPE,Gaussian Process,0.575744848052766,0.5791919036548464,-0.003447055602080277,5,10,0,16.0,0.01025390625,0.03076171875,True,Gaussian Process higher mean (numerically)

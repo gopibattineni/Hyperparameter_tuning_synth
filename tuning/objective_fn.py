@@ -23,7 +23,7 @@ except ImportError as exc:  # pragma: no cover
 
 from config_utils import load_config, load_generator_config
 from datasets.schema import DatasetSpec
-from evaluation.fidelity import evaluate_fidelity
+from evaluation.fidelity import evaluate_fidelity, sdv_required_but_missing
 from evaluation.objective import compute_objective
 from evaluation.privacy import evaluate_privacy
 from evaluation.utility import evaluate_utility
@@ -99,12 +99,21 @@ class TrialObjective:
         params = self._sample_params(trial)
         self.last_params_ = dict(params)
 
+        import gc
+
         generator = self.generator_cls.from_params(params)
         try:
             generator.fit(self.train_df, self.metadata)
             synthetic = generator.sample(n=self.sample_n, seed=self.seed + trial.number)
         except Exception as exc:
             # Failed trials are pruned so Optuna continues exploring.
+            if hasattr(generator, "release"):
+                try:
+                    generator.release()
+                except Exception:
+                    pass
+            del generator
+            gc.collect()
             trial.set_user_attr("error", f"{type(exc).__name__}: {exc}")
             raise optuna.TrialPruned(f"generator failed: {exc}") from exc
 
@@ -117,13 +126,48 @@ class TrialObjective:
         fidelity = evaluate_fidelity(
             self.train_df, synthetic, self.metadata, self.objective_cfg
         )
+        if sdv_required_but_missing(fidelity, self.objective_cfg):
+            if hasattr(generator, "release"):
+                try:
+                    generator.release()
+                except Exception:
+                    pass
+            del generator
+            gc.collect()
+            msg = (
+                "FidelityUnavailableError: SDV QualityReport required "
+                "(fidelity.aggregation=sdv_only / require_sdv) but unavailable; "
+                "no silent KS/corr fallback"
+            )
+            trial.set_user_attr("error", msg)
+            trial.set_user_attr("sdv_unavailable", True)
+            for key, value in fidelity.items():
+                try:
+                    trial.set_user_attr(
+                        key, float(value) if isinstance(value, (int, float)) and value == value else value
+                    )
+                except Exception:
+                    trial.set_user_attr(key, str(value))
+            raise optuna.TrialPruned(msg)
+
         privacy = evaluate_privacy(
             self.train_df, synthetic, self.metadata, self.objective_cfg
         )
         utility = evaluate_utility(
             self.train_df, synthetic, self.test_df, self.metadata, self.objective_cfg
         )
-        combined = compute_objective(fidelity, privacy, utility, self.objective_cfg)
+        try:
+            combined = compute_objective(fidelity, privacy, utility, self.objective_cfg)
+        except ValueError as exc:
+            if hasattr(generator, "release"):
+                try:
+                    generator.release()
+                except Exception:
+                    pass
+            del generator
+            gc.collect()
+            trial.set_user_attr("error", f"{type(exc).__name__}: {exc}")
+            raise optuna.TrialPruned(str(exc)) from exc
 
         # Log raw + normalized metrics on the trial for later analysis
         for key, value in {**fidelity, **privacy, **utility, **combined}.items():
@@ -139,5 +183,14 @@ class TrialObjective:
             "combined": combined,
         }
         self.last_synthetic_ = synthetic
+
+        # ForestDiffusion (and similar) can leave multi‑GiB banks; drop eagerly.
+        if hasattr(generator, "release"):
+            try:
+                generator.release()
+            except Exception:
+                pass
+        del generator
+        gc.collect()
 
         return float(combined["objective"])

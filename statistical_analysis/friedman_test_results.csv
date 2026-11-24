@@ -1,0 +1,2 @@
+n_datasets,n_algorithms,friedman_chi2,df,p_value,kendalls_w,alpha,significant_at_0.05,note
+15,3,5.199999999999989,2,0.0742735782143343,0.17333333333333295,0.05,False,Primary unit = dataset-level mean of 6 seed means (each seed mean = average best-J across 7 generators).

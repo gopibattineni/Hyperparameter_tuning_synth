@@ -263,7 +263,7 @@ pip install "numpy>=1.24,<2"
 ### Multi-pair sweep
 
 ```bash
-python scripts/run_experiments.py \
+python standard_tpe/run_experiments.py \
   --datasets cancer adult concrete \
   --n-trials 20 \
   --resume
@@ -283,7 +283,7 @@ Useful flags:
 ### Single pair
 
 ```bash
-python scripts/run_tuning.py \
+python standard_tpe/run_tuning.py \
   --generator ctgan \
   --dataset cancer \
   --n-trials 20
@@ -332,7 +332,7 @@ Excel sheets in each report:
 
 | Module | Role |
 |--------|------|
-| `scripts/run_experiments.py` | Outer loop over pairs; resume; master CSV |
+| `standard_tpe/run_experiments.py` | Outer loop over pairs; resume; master CSV |
 | `tuning/optimizer.py` | Create study, optimize, retrain best, save artefacts |
 | `tuning/objective_fn.py` | One trial: sample → fit → sample → evaluate → score |
 | `tuning/search_space.py` | YAML search space + restore Optuna stringified lists/bools |
@@ -375,10 +375,10 @@ Excel sheets in each report:
 
 ```bash
 # Priority subset
-python scripts/run_experiments.py --datasets cancer alzheimers adult --n-trials 20 --resume
+python standard_tpe/run_experiments.py --datasets cancer alzheimers adult --n-trials 20 --resume
 
 # One generator on three datasets
-python scripts/run_experiments.py --datasets cancer alzheimers adult --generators ctgan --n-trials 20 --resume
+python standard_tpe/run_experiments.py --datasets cancer alzheimers adult --generators ctgan --n-trials 20 --resume
 
 # List registered generators
 python -c "import sys; sys.path.insert(0,'.'); from generators import list_generators; print(list_generators())"

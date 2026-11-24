@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Alias entry point — delegates to ``run_experiments``."""
-
+"""Compatibility shim — Standard TPE entry points now live under standard_tpe/."""
 from __future__ import annotations
-
-from run_experiments import main
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+import runpy
+import sys
+from pathlib import Path
+_ROOT = Path(__file__).resolve().parents[1]
+raise SystemExit(runpy.run_path(str(_ROOT / "standard_tpe" / "run_all.py"), run_name="__main__") or 0)

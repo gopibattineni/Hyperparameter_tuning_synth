@@ -22,6 +22,29 @@ venv/
 **/plots/*.html
 results/_archive/
 results/_smoke/
+multivariate_tpe/_smoke/
+gaussian_process/_smoke/
+**/optuna.db-journal
 *.log
 
 # Keep summary tables, configs, notation, and manuscript figures tracked.
+
+# Runtime logs / queues
+logs/
+**/logs/
+*.out
+
+# Heavy Optuna / multiseed study artifacts (keep code + summary Excel elsewhere)
+**/optuna.db
+results/multiseed_*/
+results/multiseed_weights_*/
+results/objective_weight_sensitivity_smoke/
+results/gpu_parallel/
+results/batch*/
+results/final_batch*/
+standard_tpe/results/multiseed*/
+standard_tpe/results/objective_weight_sensitivity/**/optuna.db
+gaussian_process/results/
+multivariate_tpe/results/
+__pycache__/
+**/packed_gpu/

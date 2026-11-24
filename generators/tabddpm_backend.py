@@ -250,10 +250,12 @@ class TabDDPMBackend:
             "cat_encoding": "one-hot",
             "y_policy": "default",
         }
-        device_name = self.params.get("device")
-        if not device_name:
-            device_name = "cuda" if torch.cuda.is_available() else "cpu"
-        self._device = torch.device(device_name)
+        from generators.device import cuda_device_str, cuda_torch_device
+
+        device_name = self.params.get("device") or cuda_device_str(context="tabddpm")
+        if str(device_name).lower() in {"cpu", "cpu:0"}:
+            device_name = cuda_device_str(context="tabddpm")
+        self._device = cuda_torch_device(context="tabddpm") if device_name == "cuda" else torch.device(device_name)
 
         self._tmp = tempfile.TemporaryDirectory(prefix="tabddpm_hpo_")
         tmp = Path(self._tmp.name)
@@ -317,7 +319,7 @@ class TabDDPMBackend:
             scheduler=str(self.params.get("scheduler", "cosine")),
             T_dict=self._t_dict,
             num_numerical_features=n_num_arg,
-            device=self._device or torch.device("cpu"),
+            device=self._device or cuda_torch_device(context="tabddpm"),
             seed=seed0,
         )
         x_num_path = self._model_dir / "X_num_train.npy"

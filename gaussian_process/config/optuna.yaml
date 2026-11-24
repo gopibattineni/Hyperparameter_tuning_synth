@@ -1,0 +1,40 @@
+# Gaussian Process Bayesian optimisation (Optuna GPSampler)
+# Same seed / pruner / artefact policy as the global standard-TPE config.
+
+seed: 42
+n_trials: 20
+timeout_seconds: null
+n_jobs: 1
+
+sampler:
+  name: GPSampler
+  seed: 42
+  n_startup_trials: 10
+  deterministic_objective: false
+  warn_independent_sampling: true
+
+pruner:
+  # Same as baseline. NOTE: TrialObjective does not report intermediate values,
+  # so MedianPruner cannot prune mid-trial; generator failures still become PRUNED.
+  name: MedianPruner
+  n_startup_trials: 5
+  n_warmup_steps: 0
+
+storage:
+  # Per pair: <results_root>/.../<generator>/optuna.db (resume-safe)
+  url: auto
+
+artifact:
+  save_study_pickle: true
+  save_trials_csv: true
+  save_best_params_json: true
+  save_best_synthetic_csv: true
+  save_plots:
+    - optimization_history
+    - param_importances
+    - parallel_coordinate
+  snapshot_configs: true
+
+sample_size:
+  mode: match_train
+  fixed_n: null
